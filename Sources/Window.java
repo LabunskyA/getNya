@@ -129,6 +129,7 @@ public class Window extends JFrame {
             Integer nyaImageWidth = bufferedNyaImage.getWidth();
             Dimension maximumSizeForTheFistArea = new Dimension((((int) screenSize.getWidth() - 207) / 2), nyaImageHeight); //102 is width of get/saveNya buttons
             Dimension maximumSizeForTheSecondArea = new Dimension((int) maximumSizeForTheFistArea.getWidth() - 13, (int) maximumSizeForTheFistArea.getHeight()); //plus 9, width of window control buttons
+            Dimension minimumWindowSize = new Dimension(nyaImageWidth, 0);
             Integer maxContentPaneHeight = nyaImageHeight + buttonsPanel.getHeight() + dataField.getHeight() + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
 
             //this on is for small screens, less then 720p
@@ -142,6 +143,7 @@ public class Window extends JFrame {
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
             buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
             northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
+            setMinimumSize(minimumWindowSize);
 
             if (getExtendedState() != Frame.NORMAL) {
                 setMinimumSize(getSize());
@@ -153,7 +155,7 @@ public class Window extends JFrame {
             setCursor(Cursor.getDefaultCursor());
 
             if (getExtendedState() == Frame.NORMAL)
-                mouseMover.mouseMove(getNya.getX() + getX() + 51, maxContentPaneHeight - 20); //102 is the width of buttons
+                mouseMover.mouseMove(getNya.getX() + getX() + 50, nyaImageHeight + 40); //102 is the width of buttons
             System.out.println(getNya.getX() + " " + (getWidth() - (saveNya.getX() + 102)));
         } catch (IOException e) {
             drawNya(); //get new image, if there is something wrong with this one
