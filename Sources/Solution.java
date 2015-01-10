@@ -1,5 +1,5 @@
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 /**
@@ -9,15 +9,8 @@ public class Solution implements ActionListener {
     static protected Window getNya = new Window();
 
     public static void main(String[] args) throws IOException {
-        getNya.addWindowStateListener(new WindowStateListener() {
-            @Override
-            public void windowStateChanged(WindowEvent e) {
-                if (e.getOldState() != e.getNewState() && e.getOldState() != Frame.NORMAL)
-                    getNya.setWindowSize();
-            }
-        });
-
         Zerochan.getNumberOfTheNyas();
+        getNya.addWindowStateListener(new WindowStateListener());
         getNya.drawNya();
         getNya.setVisible(true);
         getNya.pack();

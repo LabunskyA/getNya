@@ -2,6 +2,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -10,63 +11,88 @@ import java.net.MalformedURLException;
  * Created by Lina on 21.11.2014.
  */
 
-public class Window extends JFrame{
-    private JToggleButton getNya;
-    private JToggleButton saveNya;
+public class Window extends JFrame {
+    static Integer positionX;
+    static Integer positionY;
     private BufferedImage bufferedNyaImage;
     private BufferedImage bufferedFullImage;
     private JTextField dataField;
     private JLabel nyaLabel = new JLabel();
-    private JPanel buttonsPanel = new JPanel(new FlowLayout());
-    private ActionListener saveFullNya = new Save2File();
-    private ActionListener getNewNya = new Solution();
+    private JPanel buttonsPanel = new JPanel();
+    private SimpleButton getNya;
+    private SimpleButton saveNya;
     private Component northRigidArea = Box.createRigidArea(new Dimension(0, 0));
+    private Component buttonsPanelFirstRigidArea = Box.createRigidArea(new Dimension(0, 0));
+    private Component buttonsPaneSecondRigidArea = Box.createRigidArea(new Dimension(0, 0));
+    private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-    protected BufferedImage getBufferedFullImage() {
+    BufferedImage getBufferedFullImage() {
         return bufferedFullImage;
     }
 
     protected Window() {
         super("getNya");
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        getNya = new JToggleButton();
-        saveNya = new JToggleButton();
-
-        getNya.addActionListener(getNewNya);
-        saveNya.addActionListener(saveFullNya);
-
         try {
             setIconImage(new ImageIcon(ImageIO.read(getClass().getResource("resources/Nya.png"))).getImage());
+        } catch (IOException e) {}
 
-            getNya.setIcon(new ImageIcon(ImageIO.read(getClass().getResource("resources/getNya.png"))));
-            getNya.setPressedIcon(new ImageIcon(ImageIO.read(getClass().getResource("resources/getNyaPressed.png"))));
-            getNya.setMargin(new Insets(0, 0, 0, 0));
-            getNya.setBorder(BorderFactory.createEmptyBorder());
-            getNya.setBackground(Color.WHITE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            saveNya.setIcon(new ImageIcon(ImageIO.read(getClass().getResource("resources/saveNya.png"))));
-            saveNya.setPressedIcon(new ImageIcon(ImageIO.read(getClass().getResource("resources/saveNyaPressed.png"))));
-            saveNya.setMargin(new Insets(0, 0, 0, 0));
-            saveNya.setBorder(BorderFactory.createEmptyBorder());
-            saveNya.setBackground(Color.WHITE);
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+        ActionListener saveFullNya = new Listeners();
+        ActionListener getNewNya = new Solution();
+        ActionListener exitNya = new CloseNya();
+        ActionListener maximizeNyaWindow = new MaximizeNya();
+        ActionListener minimizeNyaWindow = new MinimizeNya();
+        ActionListener nyaSettings = new Settings();
+
+        MouseAdapter mouseMove = new MouseMoveListener();
+        MouseAdapter mouseDrag = new MouseDragListener();
+
+        getNya = new SimpleButton("resources/getNya.png", "resources/getNyaPressed.png");
+        saveNya = new SimpleButton("resources/saveNya.png", "resources/saveNyaPressed.png");
+        SimpleButton closeNya = new SimpleButton("resources/closeNya.png");
+        SimpleButton maximizeNya = new SimpleButton("resources/maximizeNya.png");
+        SimpleButton minimizeNya = new SimpleButton("resources/minimizeNya.png");
+        SimpleButton nyaPrefs = new SimpleButton("resources/nyaPrefs.png");
 
         JPanel centralPanel = new JPanel();
+        JPanel smallButtonsPanel = new JPanel();
 
         nyaLabel = new JLabel();
         dataField = new JTextField();
 
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        addMouseListener(mouseMove);
+        addMouseMotionListener(mouseDrag);
+
+        getNya.addActionListener(getNewNya);
+        saveNya.addActionListener(saveFullNya);
+        closeNya.addActionListener(exitNya);
+        maximizeNya.addActionListener(maximizeNyaWindow);
+        minimizeNya.addActionListener(minimizeNyaWindow);
+        nyaPrefs.addActionListener(nyaSettings);
 
         nyaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.Y_AXIS));
+        smallButtonsPanel.add(Box.createRigidArea(new Dimension(0, 1))); //Костыль
+        smallButtonsPanel.add(minimizeNya);
+        smallButtonsPanel.add(maximizeNya);
+        smallButtonsPanel.add(closeNya);
+        smallButtonsPanel.setBackground(Color.WHITE);
+
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
+        buttonsPanel.add(buttonsPanelFirstRigidArea);
         buttonsPanel.add(getNya);
+        if (screenSize.getWidth() >= 1200) //semi-костыль
+            buttonsPanel.add(Box.createRigidArea(new Dimension((int) (screenSize.getWidth() / 600 + 1), 0)));
+        else
+            buttonsPanel.add(Box.createRigidArea(new Dimension(3, 0)));
         buttonsPanel.add(saveNya);
+        buttonsPanel.add(buttonsPaneSecondRigidArea);
+        buttonsPanel.add(smallButtonsPanel);
         buttonsPanel.setBackground(Color.WHITE);
+        buttonsPanel.setPreferredSize(new Dimension(buttonsPanel.getWidth(), 48));
 
         dataField.setBackground(Color.BLACK);
         dataField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -85,9 +111,9 @@ public class Window extends JFrame{
         getContentPane().setBackground(Color.WHITE);
 
         setResizable(false);
-        //setUndecorated(true);
+        setUndecorated(true);
 
-        System.out.println(buttonsPanel.getHeight());
+        pack();
     }
 
     protected void drawNya() throws MalformedURLException {
@@ -96,12 +122,14 @@ public class Window extends JFrame{
         Zerochan.generateURLs();
 
         try { //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
+            Robot mouseMover = new Robot();
             bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
             bufferedFullImage = ImageIO.read(Zerochan.fullURL);
             Integer nyaImageHeight = bufferedNyaImage.getHeight();
             Integer nyaImageWidth = bufferedNyaImage.getWidth();
+            Dimension maximumSizeForTheFistArea = new Dimension((((int) screenSize.getWidth() - 207) / 2), nyaImageHeight); //102 is width of get/saveNya buttons
+            Dimension maximumSizeForTheSecondArea = new Dimension((int) maximumSizeForTheFistArea.getWidth() - 13, (int) maximumSizeForTheFistArea.getHeight()); //plus 9, width of window control buttons
             Integer maxContentPaneHeight = nyaImageHeight + buttonsPanel.getHeight() + dataField.getHeight() + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
             //this on is for small screens, less then 720p
             if (screenSize.getHeight() < maxContentPaneHeight || screenSize.getWidth() < nyaImageWidth)
@@ -111,6 +139,8 @@ public class Window extends JFrame{
 
             dataField.setText("Width: " + bufferedFullImage.getWidth() + " Height: " + bufferedFullImage.getHeight());
             dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
+            buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
+            buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
             northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
 
             if (getExtendedState() != Frame.NORMAL) {
@@ -121,9 +151,13 @@ public class Window extends JFrame{
                 pack();
 
             setCursor(Cursor.getDefaultCursor());
+
+            if (getExtendedState() == Frame.NORMAL)
+                mouseMover.mouseMove(getNya.getX() + getX() + 51, maxContentPaneHeight - 20); //102 is the width of buttons
+            System.out.println(getNya.getX() + " " + (getWidth() - (saveNya.getX() + 102)));
         } catch (IOException e) {
-            drawNya();
-        }
+            drawNya(); //get new image, if there is something wrong with this one
+        } catch (AWTException e){}
     }
 
     protected void setWindowSize() { //I need it to resize window every time when it changes state from maximized to normal
@@ -132,11 +166,35 @@ public class Window extends JFrame{
             Integer nyaImageHeight = bufferedNyaImage.getHeight();
             Integer nyaImageWidth = bufferedNyaImage.getWidth();
 
-            getContentPane().setSize(new Dimension(nyaImageWidth, nyaImageHeight + buttonsPanel.getHeight() + dataField.getHeight()));
+            setSize(new Dimension(nyaImageWidth, nyaImageHeight + buttonsPanel.getHeight() + dataField.getHeight()));
 
             pack();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+}
+
+class SimpleButton extends JToggleButton {
+    public SimpleButton(String path, String pressedPath) {
+        super();
+        try {
+            setIcon(new ImageIcon(ImageIO.read(getClass().getResource(path))));
+            setPressedIcon(new ImageIcon(ImageIO.read(getClass().getResource(pressedPath))));
+            setMargin(new Insets(0, 0, 0, 0));
+            setBorder(BorderFactory.createEmptyBorder());
+            setBackground(Color.WHITE);
+        } catch (IOException e) {}
+    }
+
+    public SimpleButton(String path) {
+        super();
+        try {
+            setIcon(new ImageIcon(ImageIO.read(getClass().getResource(path))));
+            setPressedIcon(new ImageIcon(ImageIO.read(getClass().getResource(path))));
+            setMargin(new Insets(0, 0, 0, 0));
+            setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false));
+            setBackground(Color.WHITE);
+        } catch (IOException e) {}
     }
 }

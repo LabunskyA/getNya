@@ -1,15 +1,14 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.RenderedImage;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 
 /**
  * Created by Lina on 31.12.2014.
  */
-public class Save2File implements ActionListener {
+public class Listeners implements ActionListener {
     private File lastSave = null;
     private Boolean firstTime = true;
 
@@ -23,7 +22,7 @@ public class Save2File implements ActionListener {
                 fileIn.close();
             }
         } catch (IOException e1) {
-            e1.printStackTrace();
+
         } catch (ClassNotFoundException e2){
             e2.printStackTrace();
         }
@@ -51,5 +50,57 @@ public class Save2File implements ActionListener {
                 System.out.println("Something went wrong =(");
             }
         }
+    }
+}
+
+class CloseNya implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.exit(0);
+    }
+}
+
+class MaximizeNya implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (Solution.getNya.getExtendedState() == Frame.NORMAL)
+            Solution.getNya.setExtendedState(Frame.MAXIMIZED_BOTH);
+        else
+            Solution.getNya.setExtendedState(Frame.NORMAL);
+    }
+}
+
+class MinimizeNya implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Solution.getNya.setExtendedState(Frame.ICONIFIED);
+    }
+}
+
+class Settings implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+    }
+}
+
+class MouseMoveListener extends MouseAdapter {
+    public void mousePressed(MouseEvent e){
+        Window.positionX = e.getX();
+        Window.positionY = e.getY();
+    }
+}
+
+class MouseDragListener extends MouseAdapter {
+    public void mouseDragged(MouseEvent e) {
+        Solution.getNya.setLocation(e.getXOnScreen() - Window.positionX, e.getYOnScreen() - Window.positionY);
+    }
+}
+
+class WindowStateListener implements java.awt.event.WindowStateListener{
+    @Override
+    public void windowStateChanged(WindowEvent e) {
+        if (e.getOldState() != e.getNewState() && e.getOldState() != Frame.NORMAL && e.getOldState() != Frame.ICONIFIED)
+            Solution.getNya.setWindowSize();
     }
 }
