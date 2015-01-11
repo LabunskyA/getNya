@@ -57,9 +57,12 @@ public class Window extends JFrame {
 
         JPanel centralPanel = new JPanel();
         JPanel smallButtonsPanel = new JPanel();
+        JPanel panelForSmallButtonsPanel = new JPanel();
 
         nyaLabel = new JLabel();
         dataField = new JTextField();
+
+        nyaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         addMouseListener(mouseMove);
         addMouseMotionListener(mouseDrag);
@@ -71,13 +74,16 @@ public class Window extends JFrame {
         minimizeNya.addActionListener(minimizeNyaWindow);
         nyaPrefs.addActionListener(nyaSettings);
 
-        nyaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.Y_AXIS));
+        smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.X_AXIS));
         smallButtonsPanel.add(minimizeNya);
         smallButtonsPanel.add(maximizeNya);
         smallButtonsPanel.add(closeNya);
         smallButtonsPanel.setBackground(Color.WHITE);
+
+        panelForSmallButtonsPanel.setLayout(new BoxLayout(panelForSmallButtonsPanel, BoxLayout.Y_AXIS));
+        panelForSmallButtonsPanel.setBackground(Color.WHITE);
+        panelForSmallButtonsPanel.add(Box.createRigidArea(new Dimension(0, 22)));
+        panelForSmallButtonsPanel.add(smallButtonsPanel);
 
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
         buttonsPanel.add(buttonsPanelFirstRigidArea);
@@ -88,7 +94,7 @@ public class Window extends JFrame {
             buttonsPanel.add(Box.createRigidArea(new Dimension(3, 0)));
         buttonsPanel.add(saveNya);
         buttonsPanel.add(buttonsPaneSecondRigidArea);
-        buttonsPanel.add(smallButtonsPanel);
+        buttonsPanel.add(panelForSmallButtonsPanel);
         buttonsPanel.setBackground(Color.WHITE);
         buttonsPanel.setPreferredSize(new Dimension(buttonsPanel.getWidth(), 48));
 

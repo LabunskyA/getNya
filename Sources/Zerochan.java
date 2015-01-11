@@ -40,7 +40,7 @@ public class Zerochan {
         } catch (MalformedURLException e) {
                 e.printStackTrace();
         } catch (IOException e) {
-                e.printStackTrace();
+                System.exit(0);
         }
     }
 
