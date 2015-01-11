@@ -20,7 +20,6 @@ public class Window extends JFrame {
     private JLabel nyaLabel = new JLabel();
     private JPanel buttonsPanel = new JPanel();
     private SimpleButton getNya;
-    private SimpleButton saveNya;
     private Component northRigidArea = Box.createRigidArea(new Dimension(0, 0));
     private Component buttonsPanelFirstRigidArea = Box.createRigidArea(new Dimension(0, 0));
     private Component buttonsPaneSecondRigidArea = Box.createRigidArea(new Dimension(0, 0));
@@ -50,7 +49,7 @@ public class Window extends JFrame {
         MouseAdapter mouseDrag = new MouseDragListener();
 
         getNya = new SimpleButton("resources/getNya.png", "resources/getNyaPressed.png");
-        saveNya = new SimpleButton("resources/saveNya.png", "resources/saveNyaPressed.png");
+        SimpleButton saveNya = new SimpleButton("resources/saveNya.png", "resources/saveNyaPressed.png");
         SimpleButton closeNya = new SimpleButton("resources/closeNya.png");
         SimpleButton maximizeNya = new SimpleButton("resources/maximizeNya.png");
         SimpleButton minimizeNya = new SimpleButton("resources/minimizeNya.png");
@@ -75,7 +74,6 @@ public class Window extends JFrame {
         nyaLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.Y_AXIS));
-        smallButtonsPanel.add(Box.createRigidArea(new Dimension(0, 1))); //Костыль
         smallButtonsPanel.add(minimizeNya);
         smallButtonsPanel.add(maximizeNya);
         smallButtonsPanel.add(closeNya);
@@ -145,7 +143,7 @@ public class Window extends JFrame {
             northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
             setMinimumSize(minimumWindowSize);
 
-            if (getExtendedState() != Frame.NORMAL) {
+            if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
                 setMinimumSize(getSize());
                 pack();
                 setMinimumSize(null);
@@ -155,11 +153,10 @@ public class Window extends JFrame {
             setCursor(Cursor.getDefaultCursor());
 
             if (getExtendedState() == Frame.NORMAL)
-                mouseMover.mouseMove(getNya.getX() + getX() + 50, nyaImageHeight + 40); //102 is the width of buttons
-            System.out.println(getNya.getX() + " " + (getWidth() - (saveNya.getX() + 102)));
+                mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
         } catch (IOException e) {
             drawNya(); //get new image, if there is something wrong with this one
-        } catch (AWTException e){}
+        } catch (AWTException e){} //never uses
     }
 
     protected void setWindowSize() { //I need it to resize window every time when it changes state from maximized to normal

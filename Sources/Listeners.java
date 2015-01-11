@@ -3,6 +3,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 
 /**
@@ -22,20 +23,23 @@ public class Listeners implements ActionListener {
                 fileIn.close();
             }
         } catch (IOException e1) {
-
         } catch (ClassNotFoundException e2){
             e2.printStackTrace();
         }
 
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("*.png", "*.png");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG file", "png", "PNG");
         JFileChooser fileChooser = new JFileChooser();
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {}
 
         if(lastSave != null)
             fileChooser = new JFileChooser(lastSave);
         fileChooser.setSelectedFile(new File("Zerochan.net - " + Zerochan.numberNya + ".png"));
         fileChooser.setFileFilter(filter);
 
-        if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(Solution.getNya) == JFileChooser.APPROVE_OPTION) {
             try{
                 if (lastSave != fileChooser.getSelectedFile()) {
                     lastSave = fileChooser.getSelectedFile();
@@ -93,7 +97,8 @@ class MouseMoveListener extends MouseAdapter {
 
 class MouseDragListener extends MouseAdapter {
     public void mouseDragged(MouseEvent e) {
-        Solution.getNya.setLocation(e.getXOnScreen() - Window.positionX, e.getYOnScreen() - Window.positionY);
+        if (Solution.getNya.getExtendedState() == Frame.NORMAL)
+            Solution.getNya.setLocation(e.getXOnScreen() - Window.positionX, e.getYOnScreen() - Window.positionY);
     }
 }
 
