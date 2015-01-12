@@ -23,7 +23,7 @@ public class Window extends JFrame {
     private Component northRigidArea = Box.createRigidArea(new Dimension(0, 0));
     private Component buttonsPanelFirstRigidArea = Box.createRigidArea(new Dimension(0, 0));
     private Component buttonsPaneSecondRigidArea = Box.createRigidArea(new Dimension(0, 0));
-    private Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    static protected Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     BufferedImage getBufferedFullImage() {
         return bufferedFullImage;
@@ -39,7 +39,7 @@ public class Window extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         ActionListener saveFullNya = new Listeners();
-        ActionListener getNewNya = new Solution();
+        ActionListener getNewNya = new getNewNya();
         ActionListener exitNya = new CloseNya();
         ActionListener maximizeNyaWindow = new MaximizeNya();
         ActionListener minimizeNyaWindow = new MinimizeNya();
@@ -53,12 +53,12 @@ public class Window extends JFrame {
         SimpleButton closeNya = new SimpleButton("resources/closeNya.png");
         SimpleButton maximizeNya = new SimpleButton("resources/maximizeNya.png");
         SimpleButton minimizeNya = new SimpleButton("resources/minimizeNya.png");
-        SimpleButton nyaPrefs = new SimpleButton("resources/nyaPrefs.png");
+        SimpleButton nyaPrefs = new SimpleButton("resources/nyaPrefs.png", "resources/nyaPrefsPressed.png");
 
         JPanel centralPanel = new JPanel();
         JPanel smallButtonsPanel = new JPanel();
         JPanel panelForSmallButtonsPanel = new JPanel();
-
+        JPanel panelForSettingsButton = new JPanel();
         nyaLabel = new JLabel();
         dataField = new JTextField();
 
@@ -74,6 +74,11 @@ public class Window extends JFrame {
         minimizeNya.addActionListener(minimizeNyaWindow);
         nyaPrefs.addActionListener(nyaSettings);
 
+        panelForSettingsButton.setLayout(new BoxLayout(panelForSettingsButton, BoxLayout.Y_AXIS));
+        panelForSettingsButton.setBackground(Color.WHITE);
+        panelForSettingsButton.add(Box.createRigidArea(new Dimension(0, 22)));
+        panelForSettingsButton.add(nyaPrefs);
+
         smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.X_AXIS));
         smallButtonsPanel.add(minimizeNya);
         smallButtonsPanel.add(maximizeNya);
@@ -86,12 +91,10 @@ public class Window extends JFrame {
         panelForSmallButtonsPanel.add(smallButtonsPanel);
 
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
+        buttonsPanel.add(panelForSettingsButton);
         buttonsPanel.add(buttonsPanelFirstRigidArea);
         buttonsPanel.add(getNya);
-        if (screenSize.getWidth() >= 1200) //semi-костыль
-            buttonsPanel.add(Box.createRigidArea(new Dimension((int) (screenSize.getWidth() / 600 + 1), 0)));
-        else
-            buttonsPanel.add(Box.createRigidArea(new Dimension(3, 0)));
+        buttonsPanel.add(Box.createRigidArea(new Dimension(3, 0)));
         buttonsPanel.add(saveNya);
         buttonsPanel.add(buttonsPaneSecondRigidArea);
         buttonsPanel.add(panelForSmallButtonsPanel);
@@ -131,10 +134,10 @@ public class Window extends JFrame {
             bufferedFullImage = ImageIO.read(Zerochan.fullURL);
             Integer nyaImageHeight = bufferedNyaImage.getHeight();
             Integer nyaImageWidth = bufferedNyaImage.getWidth();
-            Dimension maximumSizeForTheFistArea = new Dimension((((int) screenSize.getWidth() - 207) / 2), nyaImageHeight); //102 is width of get/saveNya buttons
-            Dimension maximumSizeForTheSecondArea = new Dimension((int) maximumSizeForTheFistArea.getWidth() - 13, (int) maximumSizeForTheFistArea.getHeight()); //plus 9, width of window control buttons
-            Dimension minimumWindowSize = new Dimension(nyaImageWidth, 0);
-            Integer maxContentPaneHeight = nyaImageHeight + buttonsPanel.getHeight() + dataField.getHeight() + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
+            Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 204)/2 - 16, 48);
+            Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 204)/2 - 48, 48);
+            Dimension minimumWindowSize = new Dimension(261, 0); //just buttons size
+            Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight() + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
 
             //this on is for small screens, less then 720p
             if (screenSize.getHeight() < maxContentPaneHeight || screenSize.getWidth() < nyaImageWidth)
@@ -144,9 +147,9 @@ public class Window extends JFrame {
 
             dataField.setText("Width: " + bufferedFullImage.getWidth() + " Height: " + bufferedFullImage.getHeight());
             dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
+            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
             buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
-            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
             setMinimumSize(minimumWindowSize);
 
             if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
@@ -165,18 +168,17 @@ public class Window extends JFrame {
         } catch (AWTException e){} //never uses
     }
 
-    protected void setWindowSize() { //I need it to resize window every time when it changes state from maximized to normal
-        try {
-            bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
-            Integer nyaImageHeight = bufferedNyaImage.getHeight();
-            Integer nyaImageWidth = bufferedNyaImage.getWidth();
+    protected void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal
+        if (normal)
+            setSize(bufferedNyaImage.getWidth(), bufferedNyaImage.getHeight() + buttonsPanel.getHeight() + dataField.getHeight());
+        else{
+            Dimension maximumSizeForTheFistArea = new Dimension(((int) screenSize.getWidth() - 223)/2, 48);
+            Dimension maximumSizeForTheSecondArea = new Dimension((int) maximumSizeForTheFistArea.getWidth() - 48, 48);
 
-            setSize(new Dimension(nyaImageWidth, nyaImageHeight + buttonsPanel.getHeight() + dataField.getHeight()));
-
-            pack();
-        } catch (IOException e) {
-            e.printStackTrace();
+            buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
+            buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
         }
+        //pack();
     }
 }
 

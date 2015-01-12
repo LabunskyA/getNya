@@ -3,7 +3,6 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 
 /**
@@ -64,6 +63,17 @@ class CloseNya implements ActionListener{
     }
 }
 
+class getNewNya implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try {
+            Solution.getNya.drawNya();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+    }
+}
+
 class MaximizeNya implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -84,7 +94,34 @@ class MinimizeNya implements ActionListener{
 class Settings implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
+        final JFrame settingsDialog = new JFrame("Settings");
+        JTextField inDevelopment = new JTextField("Coming soon =)");
+        JPanel smallButtonsPanel = new JPanel();
+        SimpleButton closeButton = new SimpleButton("resources/closeNya.png");
+        ActionListener closeSettings = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                settingsDialog.dispose();
+            }
+        };
 
+        closeButton.addActionListener(closeSettings);
+
+        smallButtonsPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        smallButtonsPanel.add(closeButton);
+        smallButtonsPanel.setBackground(Color.WHITE);
+
+        inDevelopment.setBackground(Color.WHITE);
+        inDevelopment.setDisabledTextColor(Color.BLACK);
+        inDevelopment.setEnabled(false);
+
+        settingsDialog.setBackground(Color.WHITE);
+        settingsDialog.add(smallButtonsPanel, BorderLayout.SOUTH);
+        settingsDialog.add(inDevelopment, BorderLayout.CENTER);
+        settingsDialog.setUndecorated(true);
+        settingsDialog.pack();
+        settingsDialog.setLocation(Window.screenSize.width / 2 - settingsDialog.getSize().width / 2, Window.screenSize.height / 2 - settingsDialog.getSize().height);
+        settingsDialog.setVisible(true);
     }
 }
 
@@ -106,6 +143,8 @@ class WindowStateListener implements java.awt.event.WindowStateListener{
     @Override
     public void windowStateChanged(WindowEvent e) {
         if (e.getOldState() != e.getNewState() && e.getOldState() != Frame.NORMAL && e.getOldState() != Frame.ICONIFIED)
-            Solution.getNya.setWindowSize();
+            Solution.getNya.setWindowSizeNormal(true);
+        else if(e.getOldState() == Frame.NORMAL && e.getNewState() == Frame.MAXIMIZED_BOTH)
+            Solution.getNya.setWindowSizeNormal(false);
     }
 }

@@ -1,27 +1,16 @@
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Created by Lina on 21.11.2014.
  */
-public class Solution implements ActionListener {
+public class Solution {
     static protected Window getNya = new Window();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws MalformedURLException {
         Zerochan.getNumberOfTheNyas();
         getNya.addWindowStateListener(new WindowStateListener());
         getNya.drawNya();
         getNya.setVisible(true);
         getNya.pack();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        try {
-            getNya.drawNya();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
     }
 }
