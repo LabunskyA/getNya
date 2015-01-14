@@ -12,6 +12,10 @@ import java.net.MalformedURLException;
  */
 
 public class Window extends JFrame {
+    protected static Boolean hdOnly = false;
+    protected static Boolean settingsIsOpen = false;
+    protected static Boolean useTag = false;
+    protected static String tag = "";
     static Integer positionX;
     static Integer positionY;
     private BufferedImage bufferedNyaImage;
@@ -73,6 +77,7 @@ public class Window extends JFrame {
         maximizeNya.addActionListener(maximizeNyaWindow);
         minimizeNya.addActionListener(minimizeNyaWindow);
         nyaPrefs.addActionListener(nyaSettings);
+        nyaPrefs.setBorder(BorderFactory.createLineBorder(Color.white, 1, true));
 
         panelForSettingsButton.setLayout(new BoxLayout(panelForSettingsButton, BoxLayout.Y_AXIS));
         panelForSettingsButton.setBackground(Color.WHITE);
@@ -127,45 +132,62 @@ public class Window extends JFrame {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         Zerochan.generateNumberNya();
         Zerochan.generateURLs();
+        LittleParser littleParser = new LittleParser();
 
-        try { //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
-            Robot mouseMover = new Robot();
-            bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
-            bufferedFullImage = ImageIO.read(Zerochan.fullURL);
-            Integer nyaImageHeight = bufferedNyaImage.getHeight();
-            Integer nyaImageWidth = bufferedNyaImage.getWidth();
-            Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 204)/2 - 16, 48);
-            Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 204)/2 - 48, 48);
-            Dimension minimumWindowSize = new Dimension(261, 0); //just buttons size
-            Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight() + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
-
-            //this on is for small screens, less then 720p
-            if (screenSize.getHeight() < maxContentPaneHeight || screenSize.getWidth() < nyaImageWidth)
+        if (useTag)
+            if (littleParser.parse("http://Zerochan.net/" + Zerochan.numberNya).indexOf(tag) == -1)
                 drawNya();
-            else
-                nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
+            else draw();
+        else draw();
+    }
 
-            dataField.setText("Width: " + bufferedFullImage.getWidth() + " Height: " + bufferedFullImage.getHeight());
-            dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
-            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
-            buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
-            buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
-            setMinimumSize(minimumWindowSize);
+    private void draw() throws MalformedURLException {
+        try { //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
+            bufferedFullImage = ImageIO.read(Zerochan.fullURL);
+            Integer nyaFullHeight = bufferedFullImage.getHeight();
+            Integer nyaFullWidth = bufferedFullImage.getWidth();
 
-            if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
-                setMinimumSize(getSize());
-                pack();
-                setMinimumSize(null);
-            } else
-                pack();
+            if (hdOnly && (nyaFullHeight < 1080 || nyaFullWidth < 1920)) {
+                drawNya();
+            } else {
+                Robot mouseMover = new Robot();
+                bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
+                Integer nyaImageHeight = bufferedNyaImage.getHeight();
+                Integer nyaImageWidth = bufferedNyaImage.getWidth();
+                Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 204) / 2 - 16, 48);
+                Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 204) / 2 - 48, 48);
+                Dimension minimumWindowSize = new Dimension(274, 0); //just buttons size
+                Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight() + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
 
-            setCursor(Cursor.getDefaultCursor());
+                //this on is for small screens, less then 720p
+                if (screenSize.getHeight() < maxContentPaneHeight || screenSize.getWidth() < nyaImageWidth)
+                    drawNya();
+                else
+                    nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
 
-            if (getExtendedState() == Frame.NORMAL)
-                mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
+                dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
+                dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
+                northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
+                buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
+                buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
+                setMinimumSize(minimumWindowSize);
+
+                if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
+                    setMinimumSize(getSize());
+                    pack();
+                    setMinimumSize(null);
+                } else
+                    pack();
+
+                setCursor(Cursor.getDefaultCursor());
+
+                if (getExtendedState() == Frame.NORMAL)
+                    mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
+            }
         } catch (IOException e) {
             drawNya(); //get new image, if there is something wrong with this one
-        } catch (AWTException e){} //never uses
+        } catch (AWTException e) {
+        } //never uses
     }
 
     protected void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal

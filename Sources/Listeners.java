@@ -1,5 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
@@ -29,9 +31,6 @@ public class Listeners implements ActionListener {
         FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG file", "png", "PNG");
         JFileChooser fileChooser = new JFileChooser();
 
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e1) {}
 
         if(lastSave != null)
             fileChooser = new JFileChooser(lastSave);
@@ -94,34 +93,97 @@ class MinimizeNya implements ActionListener{
 class Settings implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
-        final JFrame settingsDialog = new JFrame("Settings");
-        JTextField inDevelopment = new JTextField("Coming soon =)");
-        JPanel smallButtonsPanel = new JPanel();
-        SimpleButton closeButton = new SimpleButton("resources/closeNya.png");
-        ActionListener closeSettings = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                settingsDialog.dispose();
-            }
-        };
+        if (!Window.settingsIsOpen) {
+            Window.settingsIsOpen = true;
+            final JFrame settingsDialog = new JFrame("Settings");
+            JTextField tagPointer = new JTextField("Tag (only one, VERY SLOW): ");
+            final JTextField tag = new JTextField(Window.tag);
+            JPanel mainPanel = new JPanel();
+            JPanel smallButtonsPanel = new JPanel();
+            JPanel tagPanel = new JPanel();
+            Checkbox hdCheckBox = new Checkbox("HD nya only");
+            SimpleButton closeButton = new SimpleButton("resources/closeNya.png");
+            ActionListener closeSettings = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    settingsDialog.dispose();
+                    Window.settingsIsOpen = false;
+                }
+            };
 
-        closeButton.addActionListener(closeSettings);
+            if (Window.hdOnly)
+                hdCheckBox.setState(true);
+            else
+                hdCheckBox.setState(false);
 
-        smallButtonsPanel.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-        smallButtonsPanel.add(closeButton);
-        smallButtonsPanel.setBackground(Color.WHITE);
+            hdCheckBox.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    if (Window.hdOnly == true)
+                        Window.hdOnly = false;
+                    else
+                        Window.hdOnly = true;
+                }
+            });
+            closeButton.addActionListener(closeSettings);
 
-        inDevelopment.setBackground(Color.WHITE);
-        inDevelopment.setDisabledTextColor(Color.BLACK);
-        inDevelopment.setEnabled(false);
+            hdCheckBox.setBackground(Color.WHITE);
 
-        settingsDialog.setBackground(Color.WHITE);
-        settingsDialog.add(smallButtonsPanel, BorderLayout.SOUTH);
-        settingsDialog.add(inDevelopment, BorderLayout.CENTER);
-        settingsDialog.setUndecorated(true);
-        settingsDialog.pack();
-        settingsDialog.setLocation(Window.screenSize.width / 2 - settingsDialog.getSize().width / 2, Window.screenSize.height / 2 - settingsDialog.getSize().height);
-        settingsDialog.setVisible(true);
+            tag.setPreferredSize(new Dimension(100, 20));
+            tag.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    warn();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    warn();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    warn();
+                }
+
+                public void warn() {
+                    if (tag.getText().length() == 0) {
+                        Window.useTag = false;
+                        System.out.println("it works");
+                    }
+                    else{
+                        Window.useTag = true;
+                        Window.tag = tag.getText();
+                        System.out.println(Window.tag);
+                    }
+                }
+            });
+
+            smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.X_AXIS));
+            smallButtonsPanel.add(closeButton);
+            smallButtonsPanel.setBackground(Color.WHITE);
+
+            tagPanel.setLayout(new FlowLayout());
+            tagPanel.setBackground(Color.WHITE);
+            tagPanel.add(tagPointer);
+            tagPanel.add(tag);
+
+            tagPointer.setBackground(Color.WHITE);
+            tagPointer.setDisabledTextColor(Color.BLACK);
+            tagPointer.setEnabled(false);
+
+            mainPanel.setBackground(Color.WHITE);
+            mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+            mainPanel.add(hdCheckBox);
+            mainPanel.add(tagPanel);
+            mainPanel.add(smallButtonsPanel);
+
+            settingsDialog.add(mainPanel);
+            settingsDialog.setUndecorated(true);
+            settingsDialog.pack();
+            settingsDialog.setLocation(Window.screenSize.width / 2 - settingsDialog.getSize().width / 2, Window.screenSize.height / 2 - settingsDialog.getSize().height);
+            settingsDialog.setVisible(true);
+        }
     }
 }
 

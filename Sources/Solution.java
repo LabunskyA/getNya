@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.net.MalformedURLException;
 
 /**
@@ -6,7 +7,9 @@ import java.net.MalformedURLException;
 public class Solution {
     static protected Window getNya = new Window();
 
-    public static void main(String[] args) throws MalformedURLException {
+    public static void main(String[] args) throws MalformedURLException, ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
+        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
         Zerochan.getNumberOfTheNyas();
         getNya.addWindowStateListener(new WindowStateListener());
         getNya.drawNya();
