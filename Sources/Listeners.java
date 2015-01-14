@@ -3,6 +3,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -96,7 +97,7 @@ class Settings implements ActionListener{
         if (!Window.settingsIsOpen) {
             Window.settingsIsOpen = true;
             final JFrame settingsDialog = new JFrame("Settings");
-            JTextField tagPointer = new JTextField("Tag (only one, VERY SLOW): ");
+            JTextField tagPointer = new JTextField("Tag (only one, could works slowly): ");
             final JTextField tag = new JTextField(Window.tag);
             JPanel mainPanel = new JPanel();
             JPanel smallButtonsPanel = new JPanel();
@@ -108,6 +109,31 @@ class Settings implements ActionListener{
                 public void actionPerformed(ActionEvent e) {
                     settingsDialog.dispose();
                     Window.settingsIsOpen = false;
+                }
+            };
+            DocumentListener documentListener = new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    warn();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    warn();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    warn();
+                }
+
+                public void warn() {
+                    if (tag.getText().length() == 0) {
+                        Window.useTag = false;
+                    } else {
+                        Window.useTag = true;
+                        Window.tag = tag.getText();
+                    }
                 }
             };
 
@@ -130,34 +156,7 @@ class Settings implements ActionListener{
             hdCheckBox.setBackground(Color.WHITE);
 
             tag.setPreferredSize(new Dimension(100, 20));
-            tag.getDocument().addDocumentListener(new DocumentListener() {
-                @Override
-                public void insertUpdate(DocumentEvent e) {
-                    warn();
-                }
-
-                @Override
-                public void removeUpdate(DocumentEvent e) {
-                    warn();
-                }
-
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                    warn();
-                }
-
-                public void warn() {
-                    if (tag.getText().length() == 0) {
-                        Window.useTag = false;
-                        System.out.println("it works");
-                    }
-                    else{
-                        Window.useTag = true;
-                        Window.tag = tag.getText();
-                        System.out.println(Window.tag);
-                    }
-                }
-            });
+            tag.getDocument().addDocumentListener(documentListener);
 
             smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.X_AXIS));
             smallButtonsPanel.add(closeButton);

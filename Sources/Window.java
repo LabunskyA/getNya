@@ -135,9 +135,9 @@ public class Window extends JFrame {
         LittleParser littleParser = new LittleParser();
 
         if (useTag)
-            if (littleParser.parse("http://Zerochan.net/" + Zerochan.numberNya).indexOf(tag) == -1)
-                drawNya();
-            else draw();
+            if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya).contains(tag))
+                draw();
+            else drawNya();
         else draw();
     }
 
@@ -193,14 +193,13 @@ public class Window extends JFrame {
     protected void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal
         if (normal)
             setSize(bufferedNyaImage.getWidth(), bufferedNyaImage.getHeight() + buttonsPanel.getHeight() + dataField.getHeight());
-        else{
+        else{//if maximized
             Dimension maximumSizeForTheFistArea = new Dimension(((int) screenSize.getWidth() - 223)/2, 48);
             Dimension maximumSizeForTheSecondArea = new Dimension((int) maximumSizeForTheFistArea.getWidth() - 48, 48);
 
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
             buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
         }
-        //pack();
     }
 }
 

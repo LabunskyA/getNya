@@ -59,10 +59,8 @@ class LittleParser {
             }
             inputStream.close();
             inputStreamReader.close();
-        } catch (java.io.FileNotFoundException e){
-            Solution.getNya.drawNya();
         } catch (IOException e) {
-            e.printStackTrace();
+            return "";
         }
 
         return stringBuffer.toString();
