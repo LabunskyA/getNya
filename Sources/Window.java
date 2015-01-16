@@ -12,12 +12,16 @@ import java.net.MalformedURLException;
  */
 
 public class Window extends JFrame {
-    protected static Boolean hdOnly = false;
-    protected static Boolean settingsIsOpen = false;
-    protected static Boolean useTag = false;
-    protected static String tag = "";
+    static Boolean hdOnly = false;
+    static Boolean currentResolution = false;
+    static Boolean settingsIsOpen = false;
+    static Boolean useTag = false;
+    static String tag = "";
     static Integer positionX;
     static Integer positionY;
+    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    static Dimension customResolution = new Dimension(0, 0);
+
     private BufferedImage bufferedNyaImage;
     private BufferedImage bufferedFullImage;
     private JTextField dataField;
@@ -27,7 +31,6 @@ public class Window extends JFrame {
     private Component northRigidArea = Box.createRigidArea(new Dimension(0, 0));
     private Component buttonsPanelFirstRigidArea = Box.createRigidArea(new Dimension(0, 0));
     private Component buttonsPaneSecondRigidArea = Box.createRigidArea(new Dimension(0, 0));
-    static protected Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     BufferedImage getBufferedFullImage() {
         return bufferedFullImage;
@@ -38,7 +41,7 @@ public class Window extends JFrame {
 
         try {
             setIconImage(new ImageIcon(ImageIO.read(getClass().getResource("resources/Nya.png"))).getImage());
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
@@ -141,13 +144,15 @@ public class Window extends JFrame {
         else draw();
     }
 
-    private void draw() throws MalformedURLException {
+    protected void draw() throws MalformedURLException {
         try { //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
             bufferedFullImage = ImageIO.read(Zerochan.fullURL);
             Integer nyaFullHeight = bufferedFullImage.getHeight();
             Integer nyaFullWidth = bufferedFullImage.getWidth();
 
             if (hdOnly && (nyaFullHeight < 1080 || nyaFullWidth < 1920)) {
+                drawNya();
+            } else if (currentResolution && (nyaFullHeight != customResolution.getHeight() || nyaFullWidth != customResolution.getWidth())){
                 drawNya();
             } else {
                 Robot mouseMover = new Robot();
@@ -181,12 +186,12 @@ public class Window extends JFrame {
 
                 setCursor(Cursor.getDefaultCursor());
 
-                if (getExtendedState() == Frame.NORMAL)
+                if (getExtendedState() == Frame.NORMAL && !settingsIsOpen)
                     mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
             }
         } catch (IOException e) {
             drawNya(); //get new image, if there is something wrong with this one
-        } catch (AWTException e) {
+        } catch (AWTException ignored) {
         } //never uses
     }
 
@@ -212,7 +217,7 @@ class SimpleButton extends JToggleButton {
             setMargin(new Insets(0, 0, 0, 0));
             setBorder(BorderFactory.createEmptyBorder());
             setBackground(Color.WHITE);
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
     }
 
     public SimpleButton(String path) {
@@ -223,6 +228,6 @@ class SimpleButton extends JToggleButton {
             setMargin(new Insets(0, 0, 0, 0));
             setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false));
             setBackground(Color.WHITE);
-        } catch (IOException e) {}
+        } catch (IOException ignored) {}
     }
 }

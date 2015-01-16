@@ -12,6 +12,7 @@ import java.util.Random;
 public class Zerochan {
     protected static Integer numberOfTheNyas;
     protected static Integer numberNya;
+    protected static URL prevURL;
     protected static URL nyaURL;
     protected static URL fullURL;
 
@@ -36,16 +37,17 @@ public class Zerochan {
 
     protected static void generateURLs() {
         try {
+            prevURL = nyaURL;
             nyaURL = new URL("http://s1.zerochan.net/.600." + Integer.toString(numberNya) + ".jpg");
             fullURL = new URL("http://static.zerochan.net/.full." + Integer.toString(numberNya) + ".jpg");
-        } catch (MalformedURLException e) {}
+        } catch (MalformedURLException ignored) {}
     }
 }
 
 class LittleParser {
     public String parse(String urlString) throws MalformedURLException {
         URL url = new URL(urlString);
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuffer = new StringBuilder();
 
         try {
             InputStream inputStream = url.openConnection().getInputStream();

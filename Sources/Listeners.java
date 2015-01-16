@@ -3,10 +3,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.URL;
 
 /**
  * Created by Lina on 31.12.2014.
@@ -24,7 +24,7 @@ public class Listeners implements ActionListener {
                 lastSave = (File) objectIn.readObject();
                 fileIn.close();
             }
-        } catch (IOException e1) {
+        } catch (IOException ignored) {
         } catch (ClassNotFoundException e2){
             e2.printStackTrace();
         }
@@ -74,6 +74,22 @@ class getNewNya implements ActionListener{
     }
 }
 
+class GetPrevNya implements ActionListener{
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        URL temp[] = {Zerochan.nyaURL, Zerochan.fullURL};
+        Zerochan.nyaURL = Zerochan.prevURL;
+        Zerochan.prevURL = temp[0];
+        Zerochan.fullURL = temp[1];
+
+        try {
+            Solution.getNya.draw();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+    }
+}
+
 class MaximizeNya implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -92,40 +108,51 @@ class MinimizeNya implements ActionListener{
 }
 
 class Settings implements ActionListener{
+    Integer positionX = 0;
+    Integer positionY = 0;
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!Window.settingsIsOpen) {
             Window.settingsIsOpen = true;
+
             final JFrame settingsDialog = new JFrame("Settings");
-            JTextField tagPointer = new JTextField("Tag (only one, could works slowly): ");
             final JTextField tag = new JTextField(Window.tag);
+            final JTextField widthScan = new JTextField(Integer.toString((int) Window.customResolution.getWidth()));
+            final JTextField heightScan = new JTextField(Integer.toString((int) Window.customResolution.getHeight()));
+
+            JTextField tagPointer = new JTextField(" Tag (only one, could works slowly): ");
+            JTextField width = new JTextField(" Width: ");
+            JTextField height = new JTextField(" Height: ");
+
             JPanel mainPanel = new JPanel();
+            JPanel hdCheckBoxPanel = new JPanel();
             JPanel smallButtonsPanel = new JPanel();
             JPanel tagPanel = new JPanel();
+            JPanel sizePanel = new JPanel();
+            JPanel buttonPanel = new JPanel();
+
             Checkbox hdCheckBox = new Checkbox("HD nya only");
+
             SimpleButton closeButton = new SimpleButton("resources/closeNya.png");
-            ActionListener closeSettings = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    settingsDialog.dispose();
-                    Window.settingsIsOpen = false;
-                }
-            };
+            SimpleButton prevNya = new SimpleButton("resources/prevNya.png", "resources/prevNyaPressed.png");
+
+            ActionListener getPrevNya = new GetPrevNya();
             DocumentListener documentListener = new DocumentListener() {
-                @Override
-                public void insertUpdate(DocumentEvent e) {
-                    warn();
-                }
+                    @Override
+                    public void insertUpdate(DocumentEvent e) {
+                        warn();
+                    }
 
-                @Override
-                public void removeUpdate(DocumentEvent e) {
-                    warn();
-                }
+                    @Override
+                    public void removeUpdate(DocumentEvent e) {
+                        warn();
+                    }
 
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                    warn();
-                }
+                    @Override
+                    public void changedUpdate(DocumentEvent e) {
+                        warn();
+                    }
 
                 public void warn() {
                     if (tag.getText().length() == 0) {
@@ -136,29 +163,97 @@ class Settings implements ActionListener{
                     }
                 }
             };
+            DocumentListener customWidthListener = new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {warn();}
+                @Override
+                public void removeUpdate(DocumentEvent e) {warn();}
+                @Override
+                public void changedUpdate(DocumentEvent e) {warn();}
 
-            if (Window.hdOnly)
-                hdCheckBox.setState(true);
-            else
-                hdCheckBox.setState(false);
+                public void warn() {
+                    if (widthScan.getText().length() == 0) {
+                        Window.currentResolution = false;
+                        Window.customResolution = new Dimension(0, (int) Window.customResolution.getHeight());
+                    } else {
+                        Window.currentResolution = true;
+                        Window.customResolution = new Dimension(Integer.valueOf(widthScan.getText()), (int) Window.customResolution.getHeight());
+                    }
+                }
+            };
+            DocumentListener customHeightListener = new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {warn();}
+                @Override
+                public void removeUpdate(DocumentEvent e) {warn();}
+                @Override
+                public void changedUpdate(DocumentEvent e) {warn();}
+
+                public void warn() {
+                    if (heightScan.getText().length() == 0) {
+                        Window.currentResolution = false;
+                        Window.customResolution = new Dimension((int) Window.customResolution.getWidth(), 0);
+                    } else {
+                        Window.currentResolution = true;
+                        Window.customResolution = new Dimension((int) Window.customResolution.getWidth(), Integer.valueOf(heightScan.getText()));
+                    }
+                }
+            };
+            MouseAdapter dragDialogListener = new MouseAdapter() {
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    super.mouseDragged(e);
+                    settingsDialog.setLocation(e.getXOnScreen() - positionX, e.getYOnScreen() - positionY);
+                }
+            };
+            MouseAdapter mouseMoveListener = new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    super.mousePressed(e);
+                    positionX = e.getX();
+                    positionY = e.getY();
+                }
+            };
+            ActionListener closeSettings = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    settingsDialog.dispose();
+                    Window.settingsIsOpen = false;
+                }
+            };
 
             hdCheckBox.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
-                    if (Window.hdOnly == true)
-                        Window.hdOnly = false;
-                    else
-                        Window.hdOnly = true;
+                    Window.hdOnly = !Window.hdOnly;
                 }
             });
+            mainPanel.addMouseListener(mouseMoveListener);
+            mainPanel.addMouseMotionListener(dragDialogListener);
             closeButton.addActionListener(closeSettings);
-
-            hdCheckBox.setBackground(Color.WHITE);
+            prevNya.addActionListener(getPrevNya);
+            tag.getDocument().addDocumentListener(documentListener);
+            widthScan.getDocument().addDocumentListener(customWidthListener);
+            heightScan.getDocument().addDocumentListener(customHeightListener);
 
             tag.setPreferredSize(new Dimension(100, 20));
-            tag.getDocument().addDocumentListener(documentListener);
+            heightScan.setPreferredSize(new Dimension(50, 20));
+            widthScan.setPreferredSize(new Dimension(50, 20));
+
+            hdCheckBox.setBackground(Color.WHITE);
+            hdCheckBoxPanel.setLayout(new FlowLayout());
+            hdCheckBoxPanel.setBackground(Color.WHITE);
+            hdCheckBoxPanel.add(hdCheckBox);
+
+            sizePanel.setBackground(Color.WHITE);
+            sizePanel.setLayout(new FlowLayout());
+            sizePanel.add(width);
+            sizePanel.add(widthScan);
+            sizePanel.add(height);
+            sizePanel.add(heightScan);
 
             smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.X_AXIS));
+            smallButtonsPanel.add(Box.createRigidArea(new Dimension(277, 0)));
             smallButtonsPanel.add(closeButton);
             smallButtonsPanel.setBackground(Color.WHITE);
 
@@ -167,21 +262,41 @@ class Settings implements ActionListener{
             tagPanel.add(tagPointer);
             tagPanel.add(tag);
 
+            buttonPanel.setLayout(new FlowLayout());
+            buttonPanel.setBackground(Color.WHITE);
+            buttonPanel.add(prevNya);
+
             tagPointer.setBackground(Color.WHITE);
             tagPointer.setDisabledTextColor(Color.BLACK);
             tagPointer.setEnabled(false);
 
+            height.setBackground(Color.WHITE);
+            height.setDisabledTextColor(Color.BLACK);
+            height.setEnabled(false);
+
+            width.setBackground(Color.WHITE);
+            width.setDisabledTextColor(Color.BLACK);
+            width.setEnabled(false);
+
             mainPanel.setBackground(Color.WHITE);
             mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-            mainPanel.add(hdCheckBox);
+            mainPanel.add(hdCheckBoxPanel);
             mainPanel.add(tagPanel);
+            mainPanel.add(sizePanel);
+            mainPanel.add(buttonPanel);
             mainPanel.add(smallButtonsPanel);
 
             settingsDialog.add(mainPanel);
             settingsDialog.setUndecorated(true);
+            settingsDialog.setAlwaysOnTop(true);
             settingsDialog.pack();
-            settingsDialog.setLocation(Window.screenSize.width / 2 - settingsDialog.getSize().width / 2, Window.screenSize.height / 2 - settingsDialog.getSize().height);
+            settingsDialog.setLocation(Solution.getNya.getX() + Solution.getNya.getWidth() / 2 - settingsDialog.getSize().width / 2, Solution.getNya.getY() + Solution.getNya.getHeight() / 2 - settingsDialog.getSize().height);
             settingsDialog.setVisible(true);
+
+            if (Window.hdOnly)
+                hdCheckBox.setState(true);
+            else
+                hdCheckBox.setState(false);
         }
     }
 }
