@@ -23,6 +23,7 @@ public class Listeners implements ActionListener {
                 ObjectInputStream objectIn = new ObjectInputStream(fileIn);
                 lastSave = (File) objectIn.readObject();
                 fileIn.close();
+                firstTime = false;
             }
         } catch (IOException ignored) {
         } catch (ClassNotFoundException e2){
@@ -108,8 +109,8 @@ class MinimizeNya implements ActionListener{
 }
 
 class Settings implements ActionListener{
-    Integer positionX = 0;
-    Integer positionY = 0;
+    private Integer positionX = 0;
+    private Integer positionY = 0;
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -118,8 +119,8 @@ class Settings implements ActionListener{
 
             final JFrame settingsDialog = new JFrame("Settings");
             final JTextField tag = new JTextField(Window.tag);
-            final JTextField widthScan = new JTextField(Integer.toString((int) Window.customResolution.getWidth()));
-            final JTextField heightScan = new JTextField(Integer.toString((int) Window.customResolution.getHeight()));
+            final JTextField widthScan = new JTextField(Integer.toString(Window.customResolution.width));
+            final JTextField heightScan = new JTextField(Integer.toString(Window.customResolution.height));
 
             JTextField tagPointer = new JTextField(" Tag (only one, could works slowly): ");
             JTextField width = new JTextField(" Width: ");
@@ -127,10 +128,11 @@ class Settings implements ActionListener{
 
             JPanel mainPanel = new JPanel();
             JPanel hdCheckBoxPanel = new JPanel();
-            JPanel smallButtonsPanel = new JPanel();
+            JPanel buttonsPanel = new JPanel();
             JPanel tagPanel = new JPanel();
             JPanel sizePanel = new JPanel();
-            JPanel buttonPanel = new JPanel();
+            JPanel prevNyaPanel = new JPanel();
+            JPanel closePanel = new JPanel();
 
             Checkbox hdCheckBox = new Checkbox("HD nya only");
 
@@ -159,7 +161,7 @@ class Settings implements ActionListener{
                         Window.useTag = false;
                     } else {
                         Window.useTag = true;
-                        Window.tag = tag.getText();
+                        Window.tag = tag.getText().toLowerCase();
                     }
                 }
             };
@@ -174,10 +176,10 @@ class Settings implements ActionListener{
                 public void warn() {
                     if (widthScan.getText().length() == 0) {
                         Window.currentResolution = false;
-                        Window.customResolution = new Dimension(0, (int) Window.customResolution.getHeight());
+                        Window.customResolution = new Dimension(0, Window.customResolution.height);
                     } else {
                         Window.currentResolution = true;
-                        Window.customResolution = new Dimension(Integer.valueOf(widthScan.getText()), (int) Window.customResolution.getHeight());
+                        Window.customResolution = new Dimension(Integer.valueOf(widthScan.getText()), Window.customResolution.height);
                     }
                 }
             };
@@ -192,10 +194,10 @@ class Settings implements ActionListener{
                 public void warn() {
                     if (heightScan.getText().length() == 0) {
                         Window.currentResolution = false;
-                        Window.customResolution = new Dimension((int) Window.customResolution.getWidth(), 0);
+                        Window.customResolution = new Dimension(Window.customResolution.width, 0);
                     } else {
                         Window.currentResolution = true;
-                        Window.customResolution = new Dimension((int) Window.customResolution.getWidth(), Integer.valueOf(heightScan.getText()));
+                        Window.customResolution = new Dimension(Window.customResolution.width, Integer.valueOf(heightScan.getText()));
                     }
                 }
             };
@@ -252,19 +254,24 @@ class Settings implements ActionListener{
             sizePanel.add(height);
             sizePanel.add(heightScan);
 
-            smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.X_AXIS));
-            smallButtonsPanel.add(Box.createRigidArea(new Dimension(277, 0)));
-            smallButtonsPanel.add(closeButton);
-            smallButtonsPanel.setBackground(Color.WHITE);
-
             tagPanel.setLayout(new FlowLayout());
             tagPanel.setBackground(Color.WHITE);
             tagPanel.add(tagPointer);
             tagPanel.add(tag);
 
-            buttonPanel.setLayout(new FlowLayout());
-            buttonPanel.setBackground(Color.WHITE);
-            buttonPanel.add(prevNya);
+            prevNyaPanel.setLayout(new FlowLayout());
+            prevNyaPanel.setBackground(Color.WHITE);
+            prevNyaPanel.add(prevNya);
+
+            closePanel.setLayout(new BoxLayout(closePanel, BoxLayout.Y_AXIS));
+            closePanel.setBackground(Color.WHITE);
+            closePanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            closePanel.add(closeButton);
+
+            buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
+            buttonsPanel.add(prevNyaPanel);
+            buttonsPanel.add(closePanel);
+            buttonsPanel.setBackground(Color.WHITE);
 
             tagPointer.setBackground(Color.WHITE);
             tagPointer.setDisabledTextColor(Color.BLACK);
@@ -283,8 +290,7 @@ class Settings implements ActionListener{
             mainPanel.add(hdCheckBoxPanel);
             mainPanel.add(tagPanel);
             mainPanel.add(sizePanel);
-            mainPanel.add(buttonPanel);
-            mainPanel.add(smallButtonsPanel);
+            mainPanel.add(buttonsPanel);
 
             settingsDialog.add(mainPanel);
             settingsDialog.setUndecorated(true);

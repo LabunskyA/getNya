@@ -9,20 +9,20 @@ import java.util.Random;
  * Created by Lina on 21.11.2014.
  */
 
-public class Zerochan {
-    protected static Integer numberOfTheNyas;
-    protected static Integer numberNya;
-    protected static URL prevURL;
-    protected static URL nyaURL;
-    protected static URL fullURL;
+class Zerochan {
+    private static Integer numberOfTheNyas;
+    static Integer numberNya;
+    static URL prevURL;
+    static URL nyaURL;
+    static URL fullURL;
 
     public static void getNumberOfTheNyas() {
         try {
             LittleParser littleParser = new LittleParser();
-            String result = littleParser.parse("http://Zerochan.net");
+            String result = littleParser.parse("http://Zerochan.net", LittleParser.MAIN_PAGE);
 
             int index = result.indexOf("240.");
-            String stringNumber = result.substring(index + 4, index + 10);
+            String stringNumber = result.substring(index + 4, index + 11);
             //4 is length of "240." and there is only ~1.8 million of images on zerochan, so we need only 6 digits
             numberOfTheNyas =  Integer.parseInt(stringNumber);
         } catch (MalformedURLException e) {
@@ -30,12 +30,12 @@ public class Zerochan {
         }
     }
 
-    protected static void generateNumberNya() {
+    static void generateNumberNya() {
         Random randomNumberNya = new Random();
         numberNya = randomNumberNya.nextInt(numberOfTheNyas + 1);
     }
 
-    protected static void generateURLs() {
+    static void generateURLs() {
         try {
             prevURL = nyaURL;
             nyaURL = new URL("http://s1.zerochan.net/.600." + Integer.toString(numberNya) + ".jpg");
@@ -45,7 +45,10 @@ public class Zerochan {
 }
 
 class LittleParser {
-    public String parse(String urlString) throws MalformedURLException {
+    static final char MAIN_PAGE = 0;
+    static final char TAG = 1;
+
+    public String parse(String urlString, char type) throws MalformedURLException {
         URL url = new URL(urlString);
         StringBuilder stringBuffer = new StringBuilder();
 
@@ -65,6 +68,11 @@ class LittleParser {
             return "";
         }
 
-        return stringBuffer.toString();
+        if (type == TAG) {
+            String result = stringBuffer.toString().substring(stringBuffer.toString().indexOf("<ul id=\"tags\">"));
+            return result.substring(0, result.indexOf("/ul")).toLowerCase();
+        }
+
+        return stringBuffer.toString().toLowerCase();
     }
 }

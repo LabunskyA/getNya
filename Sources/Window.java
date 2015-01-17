@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -19,24 +20,24 @@ public class Window extends JFrame {
     static String tag = "";
     static Integer positionX;
     static Integer positionY;
-    static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     static Dimension customResolution = new Dimension(0, 0);
+    static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     private BufferedImage bufferedNyaImage;
     private BufferedImage bufferedFullImage;
-    private JTextField dataField;
     private JLabel nyaLabel = new JLabel();
-    private JPanel buttonsPanel = new JPanel();
-    private SimpleButton getNya;
-    private Component northRigidArea = Box.createRigidArea(new Dimension(0, 0));
-    private Component buttonsPanelFirstRigidArea = Box.createRigidArea(new Dimension(0, 0));
-    private Component buttonsPaneSecondRigidArea = Box.createRigidArea(new Dimension(0, 0));
+    private final JTextField dataField;
+    private final JPanel buttonsPanel = new JPanel();
+    private final SimpleButton getNya;
+    private final Component northRigidArea = Box.createRigidArea(new Dimension(0, 0));
+    private final Component buttonsPanelFirstRigidArea = Box.createRigidArea(new Dimension(0, 0));
+    private final Component buttonsPaneSecondRigidArea = Box.createRigidArea(new Dimension(0, 0));
 
     BufferedImage getBufferedFullImage() {
         return bufferedFullImage;
     }
 
-    protected Window() {
+    Window() {
         super("getNya");
 
         try {
@@ -131,20 +132,20 @@ public class Window extends JFrame {
         pack();
     }
 
-    protected void drawNya() throws MalformedURLException {
+    void drawNya() throws MalformedURLException {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         Zerochan.generateNumberNya();
         Zerochan.generateURLs();
         LittleParser littleParser = new LittleParser();
 
         if (useTag)
-            if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya).contains(tag))
+            if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
                 draw();
             else drawNya();
         else draw();
     }
 
-    protected void draw() throws MalformedURLException {
+    void draw() throws MalformedURLException {
         try { //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
             bufferedFullImage = ImageIO.read(Zerochan.fullURL);
             Integer nyaFullHeight = bufferedFullImage.getHeight();
@@ -162,17 +163,20 @@ public class Window extends JFrame {
                 Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 204) / 2 - 16, 48);
                 Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 204) / 2 - 48, 48);
                 Dimension minimumWindowSize = new Dimension(274, 0); //just buttons size
-                Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight() + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom;
+                Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
 
                 //this on is for small screens, less then 720p
-                if (screenSize.getHeight() < maxContentPaneHeight || screenSize.getWidth() < nyaImageWidth)
-                    drawNya();
-                else
+                if (screenSize.height < maxContentPaneHeight || screenSize.width < nyaImageWidth) {
+                    Image scaledImage = bufferedNyaImage.getScaledInstance(screenSize.height - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, -1, Image.SCALE_FAST);
+                    nyaLabel.setIcon(new ImageIcon(scaledImage));
+                    nyaImageHeight = ((BufferedImage) scaledImage).getHeight();
+                    nyaImageWidth = ((BufferedImage) scaledImage).getWidth();
+                } else
                     nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
 
                 dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
                 dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
-                northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, ((int) screenSize.getHeight() - maxContentPaneHeight) / 2));
+                northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - maxContentPaneHeight) / 2));
                 buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
                 buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
                 setMinimumSize(minimumWindowSize);
@@ -191,15 +195,14 @@ public class Window extends JFrame {
             }
         } catch (IOException e) {
             drawNya(); //get new image, if there is something wrong with this one
-        } catch (AWTException ignored) {
-        } //never uses
+        } catch (AWTException ignored) {}
     }
 
-    protected void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal
+    void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal
         if (normal)
             setSize(bufferedNyaImage.getWidth(), bufferedNyaImage.getHeight() + buttonsPanel.getHeight() + dataField.getHeight());
         else{//if maximized
-            Dimension maximumSizeForTheFistArea = new Dimension(((int) screenSize.getWidth() - 223)/2, 48);
+            Dimension maximumSizeForTheFistArea = new Dimension((screenSize.width - 223)/2, 48);
             Dimension maximumSizeForTheSecondArea = new Dimension((int) maximumSizeForTheFistArea.getWidth() - 48, 48);
 
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
