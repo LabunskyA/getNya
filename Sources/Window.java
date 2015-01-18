@@ -4,15 +4,14 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
-import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
 /**
- * Created by Lina on 21.11.2014.
+ * Created by LabunskyA
+ * Protected with GNU GPLv2 and your honesty
  */
-
-public class Window extends JFrame {
+class Window extends JFrame {
     static Boolean hdOnly = false;
     static Boolean currentResolution = false;
     static Boolean settingsIsOpen = false;
@@ -25,6 +24,8 @@ public class Window extends JFrame {
 
     private BufferedImage bufferedNyaImage;
     private BufferedImage bufferedFullImage;
+    private Integer nyaFullHeight;
+    private Integer nyaFullWidth;
     private JLabel nyaLabel = new JLabel();
     private final JTextField dataField;
     private final JPanel buttonsPanel = new JPanel();
@@ -134,28 +135,37 @@ public class Window extends JFrame {
 
     void drawNya() throws MalformedURLException {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        Zerochan.generateNumberNya();
-        Zerochan.generateURLs();
+
+        Boolean check = true;
         LittleParser littleParser = new LittleParser();
 
-        if (useTag)
-            if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
-                draw();
-            else drawNya();
-        else draw();
+        while (check) {
+            while (check) { //generate at least one time
+                Zerochan.generateNumberNya();
+                Zerochan.generateURLs();
+
+                if (useTag) {
+                    if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
+                        check = false;
+                } else check = false;
+            }
+            try {
+                bufferedFullImage = ImageIO.read(Zerochan.fullURL);
+                nyaFullHeight = bufferedFullImage.getHeight();
+                nyaFullWidth = bufferedFullImage.getWidth();
+
+                if (hdOnly && (nyaFullHeight < 1080 || nyaFullWidth < 1920))
+                    check = true;
+                else if (currentResolution && (nyaFullHeight != customResolution.getHeight() || nyaFullWidth != customResolution.getWidth()))
+                    check = true;
+            } catch (IOException e) { check = true; } //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
+
+        }
+        draw();
     }
 
-    void draw() throws MalformedURLException {
-        try { //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
-            bufferedFullImage = ImageIO.read(Zerochan.fullURL);
-            Integer nyaFullHeight = bufferedFullImage.getHeight();
-            Integer nyaFullWidth = bufferedFullImage.getWidth();
-
-            if (hdOnly && (nyaFullHeight < 1080 || nyaFullWidth < 1920)) {
-                drawNya();
-            } else if (currentResolution && (nyaFullHeight != customResolution.getHeight() || nyaFullWidth != customResolution.getWidth())){
-                drawNya();
-            } else {
+    void draw() {
+        try {
                 Robot mouseMover = new Robot();
                 bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
                 Integer nyaImageHeight = bufferedNyaImage.getHeight();
@@ -192,10 +202,7 @@ public class Window extends JFrame {
 
                 if (getExtendedState() == Frame.NORMAL && !settingsIsOpen)
                     mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
-            }
-        } catch (IOException e) {
-            drawNya(); //get new image, if there is something wrong with this one
-        } catch (AWTException ignored) {}
+        } catch (IOException | AWTException ignored) {}
     }
 
     void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal

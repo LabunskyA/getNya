@@ -9,9 +9,11 @@ import java.io.*;
 import java.net.URL;
 
 /**
- * Created by Lina on 31.12.2014.
+ * Created by LabunskyA
+ * Protected with GNU GPLv2 and your honesty
  */
-public class Listeners implements ActionListener {
+
+class Listeners implements ActionListener {
     private File lastSave = null;
     private Boolean firstTime = true;
 
@@ -83,11 +85,7 @@ class GetPrevNya implements ActionListener{
         Zerochan.prevURL = temp[0];
         Zerochan.fullURL = temp[1];
 
-        try {
-            Solution.getNya.draw();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+        Solution.getNya.draw();
     }
 }
 

@@ -6,9 +6,9 @@ import java.net.URL;
 import java.util.Random;
 
 /**
- * Created by Lina on 21.11.2014.
+ * Created by LabunskyA
+ * Protected with GNU GPLv2 and your honesty
  */
-
 class Zerochan {
     private static Integer numberOfTheNyas;
     static Integer numberNya;
@@ -68,9 +68,14 @@ class LittleParser {
             return "";
         }
 
-        if (type == TAG) {
-            String result = stringBuffer.toString().substring(stringBuffer.toString().indexOf("<ul id=\"tags\">"));
-            return result.substring(0, result.indexOf("/ul")).toLowerCase();
+        if (type == TAG ) {
+            String result = "";
+            if (stringBuffer.toString().contains("<ul id=\"tags\">")) {
+                result = stringBuffer.toString().substring(stringBuffer.toString().indexOf("<ul id=\"tags\">"));
+                result = result.substring(0, result.indexOf("/ul")).toLowerCase();
+            }
+
+            return result;
         }
 
         return stringBuffer.toString().toLowerCase();
