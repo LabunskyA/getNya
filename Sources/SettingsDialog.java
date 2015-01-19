@@ -75,6 +75,8 @@ class SettingsDialog {
                 String value = widthScan.getText();
                 if (value.length() == 0) {
                     Window.currentResolution = false;
+                    Window.moreThanX = false;
+                    Window.lessThanX = false;
                     Window.customResolution = new Dimension(0, Window.customResolution.height);
                 } else {
                     Window.currentResolution = true;
@@ -94,6 +96,8 @@ class SettingsDialog {
                 value = heightScan.getText();
                 if (value.length() == 0) {
                     Window.currentResolution = false;
+                    Window.moreThanY = false;
+                    Window.lessThanY = false;
                     Window.customResolution = new Dimension(Window.customResolution.width, 0);
                 } else {
                     Window.currentResolution = true;
