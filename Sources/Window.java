@@ -14,6 +14,10 @@ import java.net.MalformedURLException;
 class Window extends JFrame {
     static Boolean hdOnly = false;
     static Boolean currentResolution = false;
+    static Boolean moreThanX = false;
+    static Boolean lessThanX = false;
+    static Boolean moreThanY = false;
+    static Boolean lessThanY = false;
     static Boolean settingsIsOpen = false;
     static Boolean useTag = false;
     static String tag = "";
@@ -47,7 +51,7 @@ class Window extends JFrame {
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        ActionListener saveFullNya = new Listeners();
+        ActionListener saveFullNya = new Save2File();
         ActionListener getNewNya = new getNewNya();
         ActionListener exitNya = new CloseNya();
         ActionListener maximizeNyaWindow = new MaximizeNya();
@@ -137,6 +141,7 @@ class Window extends JFrame {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
         Boolean check = true;
+        Checker checker = new Checker();
         LittleParser littleParser = new LittleParser();
 
         while (check) {
@@ -144,20 +149,14 @@ class Window extends JFrame {
                 Zerochan.generateNumberNya();
                 Zerochan.generateURLs();
 
-                if (useTag) {
-                    if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
-                        check = false;
-                } else check = false;
+                check = checker.CheckTag(littleParser, true);
             }
             try {
                 bufferedFullImage = ImageIO.read(Zerochan.fullURL);
                 nyaFullHeight = bufferedFullImage.getHeight();
                 nyaFullWidth = bufferedFullImage.getWidth();
 
-                if (hdOnly && (nyaFullHeight < 1080 || nyaFullWidth < 1920))
-                    check = true;
-                else if (currentResolution && (nyaFullHeight != customResolution.getHeight() || nyaFullWidth != customResolution.getWidth()))
-                    check = true;
+                check = checker.CheckSize(nyaFullWidth, nyaFullHeight, check);
             } catch (IOException e) { check = true; } //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
 
         }
@@ -239,5 +238,37 @@ class SimpleButton extends JToggleButton {
             setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false));
             setBackground(Color.WHITE);
         } catch (IOException ignored) {}
+    }
+}
+
+class Checker {
+    public boolean CheckTag(LittleParser littleParser, Boolean check) throws MalformedURLException {
+        if (Window.useTag) {
+            if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(Window.tag))
+                check = false;
+        } else check = false;
+
+        return check;
+    }
+
+    public boolean CheckSize(Integer nyaWidth, Integer nyaHeight, Boolean check) {
+        if (Window.hdOnly && (nyaWidth < 1920 || nyaHeight < 1080))
+            check = true;
+
+        if (Window.currentResolution) {
+            if (Window.moreThanY && nyaHeight < Window.customResolution.height)
+                check = true;
+            if (Window.lessThanY && nyaHeight > Window.customResolution.height)
+                check = true;
+            if (Window.moreThanX && nyaWidth < Window.customResolution.width)
+                check = true;
+            if (Window.lessThanX && nyaWidth > Window.customResolution.width)
+                check = true;
+
+            if (!Window.moreThanY && !Window.moreThanX && !Window.lessThanY && !Window.lessThanX && (nyaHeight != Window.customResolution.height || nyaWidth != Window.customResolution.width))
+                check = true;
+        }
+
+        return check;
     }
 }
