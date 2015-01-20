@@ -83,7 +83,8 @@ class GetPrevNya implements ActionListener{
         URL temp[] = {Zerochan.nyaURL, Zerochan.fullURL};
         Zerochan.nyaURL = Zerochan.prevURL;
         Zerochan.prevURL = temp[0];
-        Zerochan.fullURL = temp[1];
+        Zerochan.fullURL = Zerochan.prevFull;
+        Zerochan.prevFull = temp[1];
 
         Solution.getNya.draw();
     }

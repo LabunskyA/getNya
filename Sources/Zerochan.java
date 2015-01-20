@@ -13,6 +13,7 @@ class Zerochan {
     private static Integer numberOfTheNyas;
     static Integer numberNya;
     static URL prevURL;
+    static URL prevFull;
     static URL nyaURL;
     static URL fullURL;
 
@@ -38,6 +39,7 @@ class Zerochan {
     static void generateURLs() {
         try {
             prevURL = nyaURL;
+            prevFull = fullURL;
             nyaURL = new URL("http://s1.zerochan.net/.600." + Integer.toString(numberNya) + ".jpg");
             fullURL = new URL("http://static.zerochan.net/.full." + Integer.toString(numberNya) + ".jpg");
         } catch (MalformedURLException ignored) {}
@@ -85,15 +87,17 @@ class LittleParser {
 class Checker {
     public boolean CheckTag(LittleParser littleParser, Boolean check) throws MalformedURLException {
         if (Window.useTag) {
-            String[] tags = Window.tag.split(" "); //for more than one tag
-            Integer tagNumContains = 0;
+            String[] or = Window.tag.split("||");
 
-            for (String tag : tags)
-                if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
-                    tagNumContains++;
-
-            if (tagNumContains == tags.length)
-                check = false;
+            for (String tags : or) {
+                Integer tagNumContains = 0;
+                String[] splitedTags = tags.split(" "); //for more than one tag
+                for (String tag : splitedTags)
+                    if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
+                        tagNumContains++;
+                if (tagNumContains == splitedTags.length)
+                    check = false;
+            }
         } else check = false;
 
         return check;

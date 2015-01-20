@@ -215,7 +215,7 @@ class AboutDialog{
 
         JPanel southPanel = new JPanel();
         JTextField madeBy = new JTextField("Made by Labunsky Artem");
-        JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nUse '+' to search for multiple word tag.\nUse ' ' (space) to search for more than one tag.\nUse '>' and '<' before size in height and width fields to specify nya size.");
+        JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nUse '+' to search for multiple word tag.\nUse ' ' (space) to search for more than one tag.\nUse || as logical or in text field.\nUse '>' and '<' before size in height and width fields to specify nya size.");
         SimpleButton closeAbout = new SimpleButton("resources/closeNya.png");
         ActionListener closeDialog = new ActionListener() {
             @Override
