@@ -177,8 +177,8 @@ class Window extends JFrame {
                 bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
                 Integer nyaImageHeight = bufferedNyaImage.getHeight();
                 Integer nyaImageWidth = bufferedNyaImage.getWidth();
-                Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 204) / 2 - 16, 48);
-                Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 204) / 2 - 48, 48);
+                Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 205) / 2 - 32, 48);
+                Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 205) / 2 - 48, 48);
                 Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
                 Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
 
