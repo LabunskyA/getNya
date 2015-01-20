@@ -52,11 +52,12 @@ class Window extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         ActionListener saveFullNya = new Save2File();
-        ActionListener getNewNya = new getNewNya();
+        ActionListener getNewNya = new GetNewNya();
         ActionListener exitNya = new CloseNya();
         ActionListener maximizeNyaWindow = new MaximizeNya();
         ActionListener minimizeNyaWindow = new MinimizeNya();
         ActionListener nyaSettings = new Settings();
+        ActionListener aboutDialog = new About();
 
         MouseAdapter mouseMove = new MouseMoveListener();
         MouseAdapter mouseDrag = new MouseDragListener();
@@ -66,12 +67,14 @@ class Window extends JFrame {
         SimpleButton closeNya = new SimpleButton("resources/closeNya.png");
         SimpleButton maximizeNya = new SimpleButton("resources/maximizeNya.png");
         SimpleButton minimizeNya = new SimpleButton("resources/minimizeNya.png");
-        SimpleButton nyaPrefs = new SimpleButton("resources/nyaPrefs.png", "resources/nyaPrefsPressed.png");
+        SimpleButton nyaPrefs = new SimpleButton("resources/nyaPrefs.png");
+        SimpleButton nyaAbout = new SimpleButton("resources/nyaAbout.png");
 
         JPanel centralPanel = new JPanel();
         JPanel smallButtonsPanel = new JPanel();
         JPanel panelForSmallButtonsPanel = new JPanel();
-        JPanel panelForSettingsButton = new JPanel();
+        JPanel settingsPanel = new JPanel();
+        JPanel panelForSettingsPanel = new JPanel();
         nyaLabel = new JLabel();
         dataField = new JTextField();
 
@@ -86,12 +89,17 @@ class Window extends JFrame {
         maximizeNya.addActionListener(maximizeNyaWindow);
         minimizeNya.addActionListener(minimizeNyaWindow);
         nyaPrefs.addActionListener(nyaSettings);
-        nyaPrefs.setBorder(BorderFactory.createLineBorder(Color.white, 1, true));
+        nyaAbout.addActionListener(aboutDialog);
 
-        panelForSettingsButton.setLayout(new BoxLayout(panelForSettingsButton, BoxLayout.Y_AXIS));
-        panelForSettingsButton.setBackground(Color.WHITE);
-        panelForSettingsButton.add(Box.createRigidArea(new Dimension(0, 22)));
-        panelForSettingsButton.add(nyaPrefs);
+        settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.X_AXIS));
+        settingsPanel.setBackground(Color.WHITE);
+        settingsPanel.add(nyaAbout);
+        settingsPanel.add(nyaPrefs);
+
+        panelForSettingsPanel.setLayout(new BoxLayout(panelForSettingsPanel, BoxLayout.Y_AXIS));
+        panelForSettingsPanel.setBackground(Color.WHITE);
+        panelForSettingsPanel.add(Box.createRigidArea(new Dimension(0, 22)));
+        panelForSettingsPanel.add(settingsPanel);
 
         smallButtonsPanel.setLayout(new BoxLayout(smallButtonsPanel, BoxLayout.X_AXIS));
         smallButtonsPanel.add(minimizeNya);
@@ -105,7 +113,7 @@ class Window extends JFrame {
         panelForSmallButtonsPanel.add(smallButtonsPanel);
 
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
-        buttonsPanel.add(panelForSettingsButton);
+        buttonsPanel.add(panelForSettingsPanel);
         buttonsPanel.add(buttonsPanelFirstRigidArea);
         buttonsPanel.add(getNya);
         buttonsPanel.add(Box.createRigidArea(new Dimension(3, 0)));
@@ -171,7 +179,7 @@ class Window extends JFrame {
                 Integer nyaImageWidth = bufferedNyaImage.getWidth();
                 Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 204) / 2 - 16, 48);
                 Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 204) / 2 - 48, 48);
-                Dimension minimumWindowSize = new Dimension(274, 0); //just buttons size
+                Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
                 Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
 
                 //this on is for small screens, less then 720p
@@ -233,42 +241,10 @@ class SimpleButton extends JToggleButton {
         super();
         try {
             setIcon(new ImageIcon(ImageIO.read(getClass().getResource(path))));
-            setPressedIcon(new ImageIcon(ImageIO.read(getClass().getResource(path))));
+            setPressedIcon(new ImageIcon(ImageIO.read(getClass().getResource(path.substring(0, path.indexOf(".")) + "Pressed.png"))));
             setMargin(new Insets(0, 0, 0, 0));
             setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false));
             setBackground(Color.WHITE);
         } catch (IOException ignored) {}
-    }
-}
-
-class Checker {
-    public boolean CheckTag(LittleParser littleParser, Boolean check) throws MalformedURLException {
-        if (Window.useTag) {
-            if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(Window.tag))
-                check = false;
-        } else check = false;
-
-        return check;
-    }
-
-    public boolean CheckSize(Integer nyaWidth, Integer nyaHeight, Boolean check) {
-        if (Window.hdOnly && (nyaWidth < 1920 || nyaHeight < 1080))
-            check = true;
-
-        if (Window.currentResolution) {
-            if (Window.moreThanY && nyaHeight < Window.customResolution.height)
-                check = true;
-            if (Window.lessThanY && nyaHeight > Window.customResolution.height)
-                check = true;
-            if (Window.moreThanX && nyaWidth < Window.customResolution.width)
-                check = true;
-            if (Window.lessThanX && nyaWidth > Window.customResolution.width)
-                check = true;
-
-            if (!Window.moreThanY && !Window.moreThanX && !Window.lessThanY && !Window.lessThanX && (nyaHeight != Window.customResolution.height || nyaWidth != Window.customResolution.width))
-                check = true;
-        }
-
-        return check;
     }
 }

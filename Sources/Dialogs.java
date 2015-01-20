@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -8,6 +6,10 @@ import java.awt.event.*;
  * Created by LabunskyA.
  * Protected with GNU GPLv2 and your honesty
  */
+class Dialogs{
+    //just name
+}
+
 class SettingsDialog {
     private Integer positionX = 0;
     private Integer positionY = 0;
@@ -37,7 +39,7 @@ class SettingsDialog {
         final JTextField widthScan = new JTextField(width4Scan);
         final JTextField heightScan = new JTextField(height4Scan);
 
-        JTextField tagPointer = new JTextField(" Tag (only one, could works slowly): ");
+        JTextField tagPointer = new JTextField(" Tag (could works slowly): ");
 
         JPanel mainPanel = new JPanel();
         JPanel hdCheckBoxPanel = new JPanel();
@@ -169,6 +171,7 @@ class SettingsDialog {
         closePanel.add(closeButton);
 
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
+        buttonsPanel.add(Box.createRigidArea(new Dimension(16, 0)));
         buttonsPanel.add(prevNyaPanel);
         buttonsPanel.add(closePanel);
         buttonsPanel.setBackground(Color.WHITE);
@@ -203,5 +206,49 @@ class SettingsDialog {
             hdCheckBox.setState(true);
         else
             hdCheckBox.setState(false);
+    }
+}
+
+class AboutDialog{
+    void ShowAbout(){
+        final JFrame about = new JFrame("About");
+
+        JPanel southPanel = new JPanel();
+        JTextField madeBy = new JTextField("Made by Labunsky Artem");
+        JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nUse '+' to search for multiple word tag.\nUse ' ' (space) to search for more than one tag.\nUse '>' and '<' before size in height and width fields to specify nya size.");
+        SimpleButton closeAbout = new SimpleButton("resources/closeNya.png");
+        ActionListener closeDialog = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                about.dispose();
+            }
+        };
+
+        closeAbout.addActionListener(closeDialog);
+
+        madeBy.setEnabled(false);
+        madeBy.setFont(Font.getFont("Open Sans"));
+        madeBy.setDisabledTextColor(Color.BLACK);
+        madeBy.setBackground(Color.WHITE);
+        madeBy.setBorder(BorderFactory.createEmptyBorder());
+
+        southPanel.setBackground(Color.WHITE);
+        southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.X_AXIS));
+        southPanel.add(Box.createRigidArea(new Dimension(2, 0)));
+        southPanel.add(madeBy);
+        southPanel.add(closeAbout);
+
+        aboutNya.setEnabled(false);
+        aboutNya.setBackground(Color.WHITE);
+        aboutNya.setFont(Font.getFont("Open Sans"));
+        aboutNya.setDisabledTextColor(Color.BLACK);
+        about.add(aboutNya, BorderLayout.CENTER);
+        about.add(southPanel, BorderLayout.SOUTH);
+
+        about.setUndecorated(true);
+        about.pack();
+        about.setLocation(Solution.getNya.getX() + Solution.getNya.getWidth() / 2 - about.getSize().width / 2, Solution.getNya.getY() + Solution.getNya.getHeight() / 2 - about.getSize().height);
+        about.setVisible(true);
+        System.out.println(madeBy.getWidth());
     }
 }

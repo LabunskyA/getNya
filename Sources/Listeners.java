@@ -23,7 +23,7 @@ class Save2File implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         try{
             if (firstTime) {
-                FileInputStream fileIn = new FileInputStream("nyaPrefs.bin");
+                FileInputStream fileIn = new FileInputStream("nyaPath.path");
                 ObjectInputStream objectIn = new ObjectInputStream(fileIn);
                 lastSave = (File) objectIn.readObject();
                 fileIn.close();
@@ -47,7 +47,7 @@ class Save2File implements ActionListener{
             try{
                 if (lastSave != fileChooser.getSelectedFile()) {
                     lastSave = fileChooser.getSelectedFile();
-                    FileOutputStream fileOut = new FileOutputStream("nyaPrefs.bin");
+                    FileOutputStream fileOut = new FileOutputStream("nyaPath.path");
                     ObjectOutputStream prefOut = new ObjectOutputStream(fileOut);
                     prefOut.writeObject(lastSave);
                     prefOut.close();
@@ -68,7 +68,7 @@ class CloseNya implements ActionListener{
     }
 }
 
-class getNewNya implements ActionListener{
+class GetNewNya implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         try {
@@ -113,6 +113,14 @@ class Settings implements ActionListener{
             SettingsDialog settingsDialog = new SettingsDialog();
             settingsDialog.ShowSettingsDialog();
         }
+    }
+}
+
+class About implements ActionListener {
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        AboutDialog aboutNya = new AboutDialog();
+        aboutNya.ShowAbout();
     }
 }
 

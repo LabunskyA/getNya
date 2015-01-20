@@ -81,3 +81,42 @@ class LittleParser {
         return stringBuffer.toString().toLowerCase();
     }
 }
+
+class Checker {
+    public boolean CheckTag(LittleParser littleParser, Boolean check) throws MalformedURLException {
+        if (Window.useTag) {
+            String[] tags = Window.tag.split(" "); //for more than one tag
+            Integer tagNumContains = 0;
+
+            for (String tag : tags)
+                if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
+                    tagNumContains++;
+
+            if (tagNumContains == tags.length)
+                check = false;
+        } else check = false;
+
+        return check;
+    }
+
+    public boolean CheckSize(Integer nyaWidth, Integer nyaHeight, Boolean check) {
+        if (Window.hdOnly && (nyaWidth < 1920 || nyaHeight < 1080))
+            check = true;
+
+        if (Window.currentResolution) {
+            if (Window.moreThanY && nyaHeight < Window.customResolution.height)
+                check = true;
+            if (Window.lessThanY && nyaHeight > Window.customResolution.height)
+                check = true;
+            if (Window.moreThanX && nyaWidth < Window.customResolution.width)
+                check = true;
+            if (Window.lessThanX && nyaWidth > Window.customResolution.width)
+                check = true;
+
+            if (!Window.moreThanY && !Window.moreThanX && !Window.lessThanY && !Window.lessThanX && (nyaHeight != Window.customResolution.height || nyaWidth != Window.customResolution.width))
+                check = true;
+        }
+
+        return check;
+    }
+}
