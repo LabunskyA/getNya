@@ -332,7 +332,7 @@ Full-Width Styles
   height:70px;
   text-indent: -5000px;
   overflow: hidden;
-  background: url(https://psv4.vk.me/c610025/u21127172/docs/6810a556778d/sprite_download.png) no-repeat bottom left;
+  background: url(https://psv4.vk.me/c609426/u21127172/docs/2a471cea48f9/sprite_download.png) no-repeat bottom left;
 }
 
 .tar_download_link {
@@ -342,12 +342,12 @@ Full-Width Styles
   height:70px;
   text-indent: -5000px;
   overflow: hidden;
-  background: url(https://psv4.vk.me/c610025/u21127172/docs/6810a556778d/sprite_download.png) no-repeat bottom right;
+  background: url(https://psv4.vk.me/c609426/u21127172/docs/2a471cea48f9/sprite_download.png) no-repeat bottom right;
   margin-left: 10px;
 }
 
 .zip_download_link:hover {
-  background: url(https://psv4.vk.me/c610025/u21127172/docs/6810a556778d/sprite_download.png) no-repeat top left;
+  background: url(https://psv4.vk.me/c609426/u21127172/docs/2a471cea48f9/sprite_download.png) no-repeat top left;
 }
 
 .tar_download_link:hover {
