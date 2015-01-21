@@ -141,8 +141,11 @@ class SettingsDialog {
         prevNya.addActionListener(getPrevNya);
 
         tag.setPreferredSize(new Dimension(100, 20));
+        tag.setBackground(Color.WHITE);
         heightScan.setPreferredSize(new Dimension(50, 20));
+        heightScan.setBackground(Color.WHITE);
         widthScan.setPreferredSize(new Dimension(50, 20));
+        widthScan.setBackground(Color.WHITE);
 
         hdCheckBox.setBackground(Color.WHITE);
         hdCheckBoxPanel.setLayout(new FlowLayout());
@@ -215,7 +218,7 @@ class AboutDialog{
 
         JPanel southPanel = new JPanel();
         JTextField madeBy = new JTextField("Made by Labunsky Artem");
-        JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nUse '+' to search for multiple words tag.\nUse ' ' (space) as logical and in the text field.\nUse 'or' as logical or in text field.\nUse '>' and '<' before size in height and width fields to specify nya size.");
+        JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nClose settings to save fields state\nUse '+' to search for multiple words tag.\nUse ' ' (space) as logical and in the text field.\nUse 'or' as logical or in text field.\nUse '>' and '<' before size in height and width fields to specify nya size.");
         SimpleButton closeAbout = new SimpleButton("resources/closeNya.png");
         ActionListener closeDialog = new ActionListener() {
             @Override

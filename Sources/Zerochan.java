@@ -88,14 +88,13 @@ class Checker {
     public boolean CheckTag(LittleParser littleParser, Boolean check) throws MalformedURLException {
         if (Window.useTag) {
             String[] or = Window.tag.split("or ");
-            System.out.println(or);
 
             for (String tags : or) {
                 Integer tagNumContains = 0;
                 String[] splitedTags = tags.split(" "); //for more than one tag
                 for (String tag : splitedTags) {
-                    System.out.println(tag);
-                    if (tag.length() > 0 && littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag + " "))
+                    String parseResult = littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG);
+                    if (tag.length() > 0 && (parseResult.contains(">" + tag) || parseResult.contains(tag + " ") || parseResult.contains(tag + "<"))) //fixed?
                         tagNumContains++;
                 }
                 if (tagNumContains == splitedTags.length)
