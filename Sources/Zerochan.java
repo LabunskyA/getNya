@@ -93,7 +93,7 @@ class Checker {
                 Integer tagNumContains = 0;
                 String[] splitedTags = tags.split(" "); //for more than one tag
                 for (String tag : splitedTags)
-                    if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag))
+                    if (littleParser.parse("http://www.zerochan.net/" + Zerochan.numberNya, LittleParser.TAG).contains(tag + " "))
                         tagNumContains++;
                 if (tagNumContains == splitedTags.length)
                     check = false;
