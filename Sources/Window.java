@@ -173,42 +173,54 @@ class Window extends JFrame {
 
     void draw() {
         try {
-                Robot mouseMover = new Robot();
-                bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
-                Integer nyaImageHeight = bufferedNyaImage.getHeight();
-                Integer nyaImageWidth = bufferedNyaImage.getWidth();
-                Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 48);
-                Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 48);
-                Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
-                Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
+            Robot mouseMover = new Robot();
+            bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
+            Integer nyaImageHeight = bufferedNyaImage.getHeight();
+            Integer nyaImageWidth = bufferedNyaImage.getWidth();
+            Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 48);
+            Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 48);
+            Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
+            Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
 
-                //this on is for small screens, less then 720p
-                if (screenSize.height < maxContentPaneHeight || screenSize.width < nyaImageWidth) {
-                    Image scaledImage = bufferedNyaImage.getScaledInstance(screenSize.height - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, -1, Image.SCALE_FAST);
-                    nyaLabel.setIcon(new ImageIcon(scaledImage));
-                    nyaImageHeight = ((BufferedImage) scaledImage).getHeight();
-                    nyaImageWidth = ((BufferedImage) scaledImage).getWidth();
-                } else
-                    nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
+            //this on is for small screens, less then 720p
+            if (screenSize.height < maxContentPaneHeight || screenSize.width < nyaImageWidth) {
+                Image scaledImage = bufferedNyaImage.getScaledInstance(screenSize.height - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, -1, Image.SCALE_FAST);
+                nyaLabel.setIcon(new ImageIcon(scaledImage));
+                nyaImageHeight = ((BufferedImage) scaledImage).getHeight();
+                nyaImageWidth = ((BufferedImage) scaledImage).getWidth();
+            } else if (getExtendedState() == Frame.NORMAL)
+                nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
+            else if (nyaFullHeight < screenSize.height && nyaFullWidth < screenSize.getWidth())
+                nyaLabel.setIcon(new ImageIcon(bufferedFullImage));
+            else { //mmm, FULLSCREEN
+                BufferedImage scaledImage = null;
+                if (nyaFullHeight < screenSize.height)
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
+                else
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, (int) screenSize.height - 48 - dataField.getHeight(), Image.SCALE_SMOOTH));
+                nyaLabel.setIcon(new ImageIcon(scaledImage));
+                nyaImageHeight = scaledImage.getHeight();
+                nyaImageWidth = scaledImage.getWidth();
+            }
 
-                dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
-                dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
-                northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - maxContentPaneHeight) / 2));
-                buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
-                buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
-                setMinimumSize(minimumWindowSize);
+            dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
+            dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
+            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - maxContentPaneHeight) / 2));
+            buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
+            buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
+            setMinimumSize(minimumWindowSize);
 
-                if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
-                    setMinimumSize(getSize());
-                    pack();
-                    setMinimumSize(null);
-                } else
-                    pack();
+            if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
+                setMinimumSize(getSize());
+                pack();
+                setMinimumSize(null);
+            } else
+                pack();
 
-                setCursor(Cursor.getDefaultCursor());
+            setCursor(Cursor.getDefaultCursor());
 
-                if (getExtendedState() == Frame.NORMAL && !settingsIsOpen)
-                    mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
+            if (getExtendedState() == Frame.NORMAL && !settingsIsOpen)
+                mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
         } catch (IOException | AWTException ignored) {}
     }
 
@@ -222,6 +234,30 @@ class Window extends JFrame {
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
             buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
         }
+    }
+
+    void resize(BufferedImage nyaFull, BufferedImage nya){
+        if (getExtendedState() == Frame.MAXIMIZED_BOTH){
+
+        }
+    }
+
+    private BufferedImage toBufferedImage(Image img){
+        if (img instanceof BufferedImage)
+        {
+            return (BufferedImage) img;
+        }
+
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+
+        // Return the buffered image
+        return bimage;
     }
 }
 
