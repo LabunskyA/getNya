@@ -1,7 +1,7 @@
 # getNya
-Simple java application for downloading pictures from Zerochan.net.
+Java application for downloading pictures from Zerochan.net.
 
-You can find images by size or a tag.
+You can find images by size and tags.
 
 It's simple. 
 
