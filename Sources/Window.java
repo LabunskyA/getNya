@@ -177,30 +177,46 @@ class Window extends JFrame {
             bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
             Integer nyaImageHeight = bufferedNyaImage.getHeight();
             Integer nyaImageWidth = bufferedNyaImage.getWidth();
-            Dimension maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 48);
-            Dimension maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 48);
+            Dimension maximumSizeForTheFistArea;
+            Dimension maximumSizeForTheSecondArea;
             Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
             Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
 
             //this on is for small screens, less then 720p
-            if (screenSize.height < maxContentPaneHeight || screenSize.width < nyaImageWidth) {
+            if (screenSize.height < maxContentPaneHeight - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom || screenSize.width < nyaImageWidth) {
                 Image scaledImage = bufferedNyaImage.getScaledInstance(screenSize.height - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, -1, Image.SCALE_FAST);
                 nyaLabel.setIcon(new ImageIcon(scaledImage));
-                nyaImageHeight = ((BufferedImage) scaledImage).getHeight();
-                nyaImageWidth = ((BufferedImage) scaledImage).getWidth();
+                nyaImageHeight = toBufferedImage(scaledImage).getHeight();
+                nyaImageWidth = toBufferedImage(scaledImage).getWidth();
             } else if (getExtendedState() == Frame.NORMAL)
                 nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
-            else if (nyaFullHeight < screenSize.height && nyaFullWidth < screenSize.getWidth())
+            else if (nyaFullHeight < screenSize.height - 48 - dataField.getHeight() && nyaFullWidth < screenSize.width - 10)
                 nyaLabel.setIcon(new ImageIcon(bufferedFullImage));
             else { //mmm, FULLSCREEN
                 BufferedImage scaledImage = null;
-                if (nyaFullHeight < screenSize.height)
-                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
-                else
-                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, (int) screenSize.height - 48 - dataField.getHeight(), Image.SCALE_SMOOTH));
+                if (nyaFullHeight >= screenSize.height - dataField.getHeight() - 48)
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, screenSize.height - 53 - dataField.getHeight(), Image.SCALE_SMOOTH));
+
+                if (scaledImage.getWidth() >= screenSize.getWidth() - 10)
+                    scaledImage = toBufferedImage(scaledImage.getScaledInstance(screenSize.width - 10, -1, Image.SCALE_SMOOTH));
+
+                if (nyaFullWidth >= screenSize.width - 10)
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(screenSize.width - 10, -1, Image.SCALE_SMOOTH));
+
+                if (scaledImage.getHeight() >= screenSize.height - dataField.getHeight() - 48)
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, screenSize.height - 53 - dataField.getHeight(), Image.SCALE_SMOOTH));
+
                 nyaLabel.setIcon(new ImageIcon(scaledImage));
                 nyaImageHeight = scaledImage.getHeight();
                 nyaImageWidth = scaledImage.getWidth();
+            }
+
+            if (getExtendedState() == Frame.NORMAL) {
+                maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 48);
+                maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 48);
+            } else {
+                maximumSizeForTheFistArea = new Dimension((screenSize.width - 206) / 2 - 32, 48);
+                maximumSizeForTheSecondArea = new Dimension((screenSize.width - 206) / 2 - 32, 48);
             }
 
             dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
@@ -225,21 +241,12 @@ class Window extends JFrame {
     }
 
     void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal
-        if (normal)
+        if (normal) {
             setSize(bufferedNyaImage.getWidth(), bufferedNyaImage.getHeight() + buttonsPanel.getHeight() + dataField.getHeight());
-        else{//if maximized
-            Dimension maximumSizeForTheFistArea = new Dimension((screenSize.width - 223)/2, 48);
-            Dimension maximumSizeForTheSecondArea = new Dimension((int) maximumSizeForTheFistArea.getWidth() - 48, 48);
-
-            buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
-            buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
+            nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
         }
-    }
-
-    void resize(BufferedImage nyaFull, BufferedImage nya){
-        if (getExtendedState() == Frame.MAXIMIZED_BOTH){
-
-        }
+        else//if maximized
+            draw();
     }
 
     private BufferedImage toBufferedImage(Image img){
