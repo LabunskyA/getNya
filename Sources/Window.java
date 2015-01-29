@@ -183,45 +183,53 @@ class Window extends JFrame {
             Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
 
             //this on is for small screens, less then 720p
-            if (screenSize.height < maxContentPaneHeight - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom || screenSize.width < nyaImageWidth) {
+            if (screenSize.height < maxContentPaneHeight + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom || screenSize.width < nyaImageWidth) {
                 Image scaledImage = bufferedNyaImage.getScaledInstance(screenSize.height - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, -1, Image.SCALE_FAST);
+
                 nyaLabel.setIcon(new ImageIcon(scaledImage));
+
                 nyaImageHeight = toBufferedImage(scaledImage).getHeight();
                 nyaImageWidth = toBufferedImage(scaledImage).getWidth();
             } else if (getExtendedState() == Frame.NORMAL)
                 nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
-            else if (nyaFullHeight < screenSize.height - 48 - dataField.getHeight() && nyaFullWidth < screenSize.width - 10)
+            else if (nyaFullHeight < screenSize.height - 48 - dataField.getHeight() && nyaFullWidth < screenSize.width - 10) {
                 nyaLabel.setIcon(new ImageIcon(bufferedFullImage));
+                nyaImageHeight = bufferedFullImage.getHeight();
+                nyaImageWidth = bufferedFullImage.getWidth();
+            }
             else { //mmm, FULLSCREEN
                 BufferedImage scaledImage = null;
                 if (nyaFullHeight >= screenSize.height - dataField.getHeight() - 48)
-                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, screenSize.height - 53 - dataField.getHeight(), Image.SCALE_SMOOTH));
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, screenSize.height - 48 - dataField.getHeight(), Image.SCALE_SMOOTH));
 
-                if (scaledImage.getWidth() >= screenSize.getWidth() - 10)
-                    scaledImage = toBufferedImage(scaledImage.getScaledInstance(screenSize.width - 10, -1, Image.SCALE_SMOOTH));
+                if (scaledImage.getWidth() >= screenSize.width)
+                    scaledImage = toBufferedImage(scaledImage.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
 
-                if (nyaFullWidth >= screenSize.width - 10)
-                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(screenSize.width - 10, -1, Image.SCALE_SMOOTH));
+                if (nyaFullWidth >= screenSize.width)
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
 
                 if (scaledImage.getHeight() >= screenSize.height - dataField.getHeight() - 48)
-                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, screenSize.height - 53 - dataField.getHeight(), Image.SCALE_SMOOTH));
+                    scaledImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, screenSize.height - 48 - dataField.getHeight(), Image.SCALE_SMOOTH));
 
                 nyaLabel.setIcon(new ImageIcon(scaledImage));
                 nyaImageHeight = scaledImage.getHeight();
                 nyaImageWidth = scaledImage.getWidth();
             }
 
-            if (getExtendedState() == Frame.NORMAL) {
+            if (getExtendedState() == Frame.NORMAL && (nyaImageWidth - 206) / 2 - 48 >= 0) {
                 maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 48);
                 maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 48);
-            } else {
+            } else if ((nyaImageWidth - 206) / 2 - 48 >= 0){
                 maximumSizeForTheFistArea = new Dimension((screenSize.width - 206) / 2 - 32, 48);
                 maximumSizeForTheSecondArea = new Dimension((screenSize.width - 206) / 2 - 32, 48);
+            } else {
+                maximumSizeForTheFistArea = new Dimension(0, 0);
+                maximumSizeForTheSecondArea = new Dimension(0, 0);
             }
 
             dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
             dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
-            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - maxContentPaneHeight) / 2));
+            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - nyaImageHeight - dataField.getHeight() - 48) / 2));
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
             buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
             setMinimumSize(minimumWindowSize);
