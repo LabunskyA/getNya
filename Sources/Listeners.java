@@ -111,8 +111,61 @@ class Settings implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         if (!Window.settingsIsOpen) {
-            SettingsDialog settingsDialog = new SettingsDialog();
-            settingsDialog.ShowSettingsDialog();
+            Window.settingsPanel.setVisible(true);
+            Window.settingsIsOpen = true;
+        } else {
+            String value = SettingsPanel.widthScan.getText();
+            if (value.length() == 0) {
+                Window.currentResolution = false;
+                Window.moreThanX = false;
+                Window.lessThanX = false;
+                Window.customResolution = new Dimension(0, Window.customResolution.height);
+            } else {
+                Window.currentResolution = true;
+                if (value.contains(">")) {
+                    Window.moreThanX = true;
+                    value = value.substring(1);
+                }
+                else Window.moreThanX = false;
+                if (value.contains("<")) {
+                    Window.lessThanX = true;
+                    value = value.substring(1);
+                }
+                else Window.lessThanX = false;
+                Window.customResolution = new Dimension(Integer.valueOf(value), Window.customResolution.height);
+            }
+
+            value = SettingsPanel.heightScan.getText();
+            if (value.length() == 0) {
+                Window.currentResolution = false;
+                Window.moreThanY = false;
+                Window.lessThanY = false;
+                Window.customResolution = new Dimension(Window.customResolution.width, 0);
+            } else {
+                Window.currentResolution = true;
+                if (value.contains(">")) {
+                    Window.moreThanY = true;
+                    value = value.substring(1);
+                }
+                else Window.moreThanY = false;
+                if (value.contains("<")) {
+                    Window.lessThanY = true;
+                    value = value.substring(1);
+                }
+                else Window.lessThanY = false;
+                Window.customResolution = new Dimension(Window.customResolution.width, Integer.valueOf(value));
+            }
+
+            if (SettingsPanel.tag.getText().length() == 0) {
+                Window.useTag = false;
+                Window.tag = "";
+            } else {
+                Window.useTag = true;
+                Window.tag = SettingsPanel.tag.getText().toLowerCase();
+            }
+
+            Window.settingsPanel.setVisible(false);
+            Window.settingsIsOpen = false;
         }
     }
 }
@@ -120,8 +173,14 @@ class Settings implements ActionListener{
 class About implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        AboutDialog aboutNya = new AboutDialog();
-        aboutNya.ShowAbout();
+        if (!Window.aboutIsOpen) {
+            Window.aboutPanel.setVisible(true);
+            Window.aboutIsOpen = !Window.aboutIsOpen;
+        }
+        else {
+            Window.aboutPanel.setVisible(false);
+            Window.aboutIsOpen = !Window.aboutIsOpen;
+        }
     }
 }
 
