@@ -1,10 +1,9 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -28,8 +27,8 @@ class Window extends JFrame {
     static Integer positionY;
     static Dimension customResolution = new Dimension(0, 0);
     static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    static JPanel settingsPanel = new SettingsPanel();
-    static JPanel aboutPanel = new AboutPanel();
+    static final SettingsPanel settingsPanel = new SettingsPanel();
+    static final AboutPanel aboutPanel = new AboutPanel();
 
     private BufferedImage bufferedNyaImage;
     private BufferedImage bufferedFullImage;
@@ -211,15 +210,16 @@ class Window extends JFrame {
                 nyaImageWidth = bufferedFullImage.getWidth();
             }
             else { //mmm, FULLSCREEN
+                BufferedImage fullscreenNya = bufferedFullImage;
                 if (nyaFullHeight >= screenSize.height - dataField.getHeight() - 48)
-                    bufferedFullImage = toBufferedImage(bufferedFullImage.getScaledInstance(-1, screenSize.height - 48 - dataField.getHeight(), Image.SCALE_SMOOTH));
+                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(-1, screenSize.height - 48 - dataField.getHeight(), Image.SCALE_SMOOTH));
 
-                if (bufferedFullImage.getWidth() >= screenSize.width)
-                    bufferedFullImage = toBufferedImage(bufferedFullImage.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
+                if (fullscreenNya.getWidth() >= screenSize.width)
+                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
 
-                nyaLabel.setIcon(new ImageIcon(bufferedFullImage));
-                nyaImageHeight = bufferedFullImage.getHeight();
-                nyaImageWidth = bufferedFullImage.getWidth();
+                nyaLabel.setIcon(new ImageIcon(fullscreenNya));
+                nyaImageHeight = fullscreenNya.getHeight();
+                nyaImageWidth = fullscreenNya.getWidth();
             }
 
             if (getExtendedState() == Frame.NORMAL && (nyaImageWidth - 206) / 2 - 48 >= 0) {
@@ -242,9 +242,9 @@ class Window extends JFrame {
 
             //this will not allow window to set it's width to settings panel width + image width
             if (settingsIsOpen)
-                settingsPanel.setVisible(!settingsIsOpen);
+                settingsPanel.setVisible(false);
             if (aboutIsOpen)
-                aboutPanel.setVisible(!aboutIsOpen);
+                aboutPanel.setVisible(false);
 
             if (getExtendedState() == Frame.MAXIMIZED_BOTH) {
                 setMinimumSize(getSize());
@@ -332,32 +332,17 @@ class SettingsPanel extends JPanel {
         String height4Scan = "";
 
         JTextField tagPointer = new JTextField(" Tag (could works slowly): ");
-        JTextField closeToSave = new JTextField("Close settings to save");
 
         JPanel hdCheckBoxPanel = new JPanel();
         JPanel tagPanel = new JPanel();
         JPanel sizePanel = new JPanel();
         JPanel prevNyaPanel = new JPanel();
-        JPanel closeToSavePanel = new JPanel();
 
         Checkbox hdCheckBox = new Checkbox("HD nya only");
 
         SimpleButton prevNya = new SimpleButton("resources/prevNya.png", "resources/prevNyaPressed.png");
 
         ActionListener getPrevNya = new GetPrevNya();
-
-        if (Window.lessThanX)
-            width4Scan = "<";
-        else if (Window.moreThanX)
-            width4Scan = ">";
-        if (Window.moreThanY)
-            height4Scan = ">";
-        else if (Window.lessThanY)
-            height4Scan = "<";
-        if (Window.customResolution.width != 0)
-            width4Scan = width4Scan + Integer.toString(Window.customResolution.width);
-        if (Window.customResolution.height != 0)
-            height4Scan = height4Scan + Integer.toString(Window.customResolution.height);
 
         hdCheckBox.addItemListener(new ItemListener() {
             @Override
@@ -374,19 +359,104 @@ class SettingsPanel extends JPanel {
         tag.setPreferredSize(new Dimension(100, 20));
         tag.setBackground(Color.WHITE);
         tag.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        tag.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                warn();
+            }
 
-        closeToSave.setBackground(Color.WHITE);
-        closeToSave.setBorder(BorderFactory.createEmptyBorder());
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                warn();
+            }
+
+            public void warn() {
+                if (tag.getText().length() == 0) {
+                    Window.useTag = false;
+                    Window.tag = "";
+                } else {
+                    Window.useTag = true;
+                    Window.tag = tag.getText().toLowerCase();
+                }
+            }
+        });
 
         heightScan.setText(height4Scan);
         heightScan.setPreferredSize(new Dimension(50, 20));
         heightScan.setBackground(Color.WHITE);
         heightScan.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        heightScan.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {warn();}
+            @Override
+            public void removeUpdate(DocumentEvent e) {warn();}
+            @Override
+            public void changedUpdate(DocumentEvent e) {warn();}
+
+            public void warn() {
+                String value = SettingsPanel.heightScan.getText();
+                if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
+                    Window.currentResolution = false;
+                    Window.moreThanY = false;
+                    Window.lessThanY = false;
+                    Window.customResolution = new Dimension(Window.customResolution.width, 0);
+                } else {
+                    Window.currentResolution = true;
+                    if (value.contains(">")) {
+                        Window.moreThanY = true;
+                        value = value.substring(1);
+                    }
+                    else Window.moreThanY = false;
+                    if (value.contains("<")) {
+                        Window.lessThanY = true;
+                        value = value.substring(1);
+                    }
+                    else Window.lessThanY = false;
+                    Window.customResolution = new Dimension(Window.customResolution.width, Integer.valueOf(value));
+                }
+            }
+        });
 
         widthScan.setText(width4Scan);
         widthScan.setPreferredSize(new Dimension(50, 20));
         widthScan.setBackground(Color.WHITE);
         widthScan.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        widthScan.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {warn();}
+            @Override
+            public void removeUpdate(DocumentEvent e) {warn();}
+            @Override
+            public void changedUpdate(DocumentEvent e) {warn();}
+
+            public void warn() {
+                String value = SettingsPanel.widthScan.getText();
+                System.out.println(value.length());
+                System.out.println(value.contains(">"));
+                if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
+                    Window.currentResolution = false;
+                    Window.moreThanX = false;
+                    Window.lessThanX = false;
+                    Window.customResolution = new Dimension(0, Window.customResolution.height);
+                } else {
+                    Window.currentResolution = true;
+                    if (value.contains(">")) {
+                        Window.moreThanX = true;
+                        value = value.substring(1);
+                    } else Window.moreThanX = false;
+                    if (value.contains("<")) {
+                        Window.lessThanX = true;
+                        value = value.substring(1);
+                    } else Window.lessThanX = false;
+                    Window.customResolution = new Dimension(Integer.valueOf(value), Window.customResolution.height);
+                }
+            }
+        });
 
         hdCheckBox.setBackground(Color.WHITE);
         hdCheckBoxPanel.setLayout(new FlowLayout());
@@ -409,10 +479,6 @@ class SettingsPanel extends JPanel {
         prevNyaPanel.setBackground(Color.WHITE);
         prevNyaPanel.add(prevNya);
 
-        closeToSavePanel.setLayout(new FlowLayout());
-        closeToSavePanel.setBackground(Color.WHITE);
-        closeToSavePanel.add(closeToSave);
-
         tagPointer.setBackground(Color.WHITE);
         tagPointer.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         tagPointer.setDisabledTextColor(Color.BLACK);
@@ -432,7 +498,6 @@ class SettingsPanel extends JPanel {
         add(tagPanel);
         add(sizePanel);
         add(prevNyaPanel);
-        add(closeToSavePanel);
 
         setBackground(Color.WHITE);
 
@@ -449,7 +514,6 @@ class AboutPanel extends JPanel{
         setVisible(false);
 
         JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nClose settings to save fields state\nUse '+' to search for multiple words tag.\nUse ' ' (space) as logical and in the text field.\nUse 'or' as logical or in text field.\nUse '>' and '<' before size in height and width\n fields to specify nya size.\n\nMade by Labunsky Artem");
-        SimpleButton closeAbout = new SimpleButton("resources/closeNya.png");
 
         aboutNya.setEnabled(false);
         aboutNya.setBackground(Color.WHITE);
