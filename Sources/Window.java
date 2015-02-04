@@ -163,6 +163,8 @@ class Window extends JFrame {
         Boolean check = true;
         Checker checker = new Checker();
         LittleParser littleParser = new LittleParser();
+        Zerochan.prevFull = Zerochan.fullURL;
+        Zerochan.prevURL = Zerochan.nyaURL;
 
         while (check) {
             while (check) { //generate at least one time

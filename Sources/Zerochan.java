@@ -38,8 +38,6 @@ class Zerochan {
 
     static void generateURLs() {
         try {
-            prevURL = nyaURL;
-            prevFull = fullURL;
             nyaURL = new URL("http://s1.zerochan.net/.600." + Integer.toString(numberNya) + ".jpg");
             fullURL = new URL("http://static.zerochan.net/.full." + Integer.toString(numberNya) + ".jpg");
         } catch (MalformedURLException ignored) {}
