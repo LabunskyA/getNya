@@ -110,12 +110,12 @@ class MinimizeNya implements ActionListener{
 class Settings implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!Window.settingsIsOpen) {
-            Window.settingsPanel.setVisible(true);
-            Window.settingsIsOpen = true;
+        if (!Solution.getNya.settingsIsOpen) {
+            Solution.getNya.settingsPanel.setVisible(true);
+            Solution.getNya.settingsIsOpen = true;
         } else {
-            Window.settingsPanel.setVisible(false);
-            Window.settingsIsOpen = false;
+            Solution.getNya.settingsPanel.setVisible(false);
+            Solution.getNya.settingsIsOpen = false;
         }
     }
 }
@@ -123,28 +123,28 @@ class Settings implements ActionListener{
 class About implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!Window.aboutIsOpen) {
-            Window.aboutPanel.setVisible(true);
-            Window.aboutIsOpen = !Window.aboutIsOpen;
+        if (!Solution.getNya.aboutIsOpen) {
+            Solution.getNya.aboutPanel.setVisible(true);
+            Solution.getNya.aboutIsOpen = !Solution.getNya.aboutIsOpen;
         }
         else {
-            Window.aboutPanel.setVisible(false);
-            Window.aboutIsOpen = !Window.aboutIsOpen;
+            Solution.getNya.aboutPanel.setVisible(false);
+            Solution.getNya.aboutIsOpen = !Solution.getNya.aboutIsOpen;
         }
     }
 }
 
 class MouseMoveListener extends MouseAdapter {
     public void mousePressed(MouseEvent e){
-        Window.positionX = e.getX();
-        Window.positionY = e.getY();
+        Solution.getNya.positionX = e.getX();
+        Solution.getNya.positionY = e.getY();
     }
 }
 
 class MouseDragListener extends MouseAdapter {
     public void mouseDragged(MouseEvent e) {
         if (Solution.getNya.getExtendedState() == Frame.NORMAL)
-            Solution.getNya.setLocation(e.getXOnScreen() - Window.positionX, e.getYOnScreen() - Window.positionY);
+            Solution.getNya.setLocation(e.getXOnScreen() - Solution.getNya.positionX, e.getYOnScreen() - Solution.getNya.positionY);
     }
 }
 

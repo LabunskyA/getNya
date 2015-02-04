@@ -84,7 +84,7 @@ class LittleParser {
 
 class Checker {
     public boolean CheckTag(LittleParser littleParser, Boolean check) throws MalformedURLException {
-        if (Window.useTag) {
+        if (Solution.getNya.useTag) {
             String[] or = Window.tag.split("or ");
 
             for (String tags : or) {
@@ -107,17 +107,17 @@ class Checker {
         if (Window.hdOnly && (nyaWidth < 1920 || nyaHeight < 1080))
             check = true;
 
-        if (Window.currentResolution) {
-            if (Window.moreThanY && nyaHeight < Window.customResolution.height)
+        if (Solution.getNya.currentResolution) {
+            if (Solution.getNya.moreThanY && nyaHeight < Solution.getNya.customResolution.height)
                 check = true;
-            if (Window.lessThanY && nyaHeight > Window.customResolution.height)
+            if (Solution.getNya.lessThanY && nyaHeight > Solution.getNya.customResolution.height)
                 check = true;
-            if (Window.moreThanX && nyaWidth < Window.customResolution.width)
+            if (Solution.getNya.moreThanX && nyaWidth < Solution.getNya.customResolution.width)
                 check = true;
-            if (Window.lessThanX && nyaWidth > Window.customResolution.width)
+            if (Solution.getNya.lessThanX && nyaWidth > Solution.getNya.customResolution.width)
                 check = true;
 
-            if (!Window.moreThanY && !Window.moreThanX && !Window.lessThanY && !Window.lessThanX && (nyaHeight != Window.customResolution.height || nyaWidth != Window.customResolution.width))
+            if (!Solution.getNya.moreThanY && !Solution.getNya.moreThanX && !Solution.getNya.lessThanY && !Solution.getNya.lessThanX && (nyaHeight != Solution.getNya.customResolution.height || nyaWidth != Solution.getNya.customResolution.width))
                 check = true;
         }
 

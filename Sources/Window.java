@@ -13,22 +13,22 @@ import java.net.MalformedURLException;
  * Protected with GNU GPLv2 and your honesty
  */
 class Window extends JFrame {
-    static Boolean hdOnly = false;
-    static Boolean currentResolution = false;
-    static Boolean moreThanX = false;
-    static Boolean lessThanX = false;
-    static Boolean moreThanY = false;
-    static Boolean lessThanY = false;
-    static Boolean settingsIsOpen = false;
-    static Boolean aboutIsOpen = false;
-    static Boolean useTag = false;
+    public Boolean currentResolution = false;
+    public Boolean moreThanX = false;
+    public Boolean lessThanX = false;
+    public Boolean moreThanY = false;
+    public Boolean lessThanY = false;
+    public Boolean settingsIsOpen = false;
+    public Boolean aboutIsOpen = false;
+    public Boolean useTag = false;
+    public Integer positionX;
+    public Integer positionY;
+    public Dimension customResolution = new Dimension(0, 0);
+    public final SettingsPanel settingsPanel = new SettingsPanel();
+    public final AboutPanel aboutPanel = new AboutPanel();
     static String tag = "";
-    static Integer positionX;
-    static Integer positionY;
-    static Dimension customResolution = new Dimension(0, 0);
+    static Boolean hdOnly = false;
     static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    static final SettingsPanel settingsPanel = new SettingsPanel();
-    static final AboutPanel aboutPanel = new AboutPanel();
 
     private BufferedImage bufferedNyaImage;
     private BufferedImage bufferedFullImage;
@@ -318,9 +318,9 @@ class SimpleButton extends JToggleButton {
 }
 
 class SettingsPanel extends JPanel {
-    static final JTextField widthScan = new JTextField();
-    static final JTextField heightScan = new JTextField();
-    static final JTextField tag = new JTextField();
+    private static final JTextField widthScan = new JTextField();
+    private static final JTextField heightScan = new JTextField();
+    private static final JTextField tag = new JTextField();
 
     SettingsPanel() {
         super();
@@ -379,10 +379,10 @@ class SettingsPanel extends JPanel {
 
             public void warn() {
                 if (tag.getText().length() == 0) {
-                    Window.useTag = false;
+                    Solution.getNya.useTag = false;
                     Window.tag = "";
                 } else {
-                    Window.useTag = true;
+                    Solution.getNya.useTag = true;
                     Window.tag = tag.getText().toLowerCase();
                 }
             }
@@ -403,23 +403,23 @@ class SettingsPanel extends JPanel {
             public void warn() {
                 String value = SettingsPanel.heightScan.getText();
                 if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
-                    Window.currentResolution = false;
-                    Window.moreThanY = false;
-                    Window.lessThanY = false;
-                    Window.customResolution = new Dimension(Window.customResolution.width, 0);
+                    Solution.getNya.currentResolution = false;
+                    Solution.getNya.moreThanY = false;
+                    Solution.getNya.lessThanY = false;
+                    Solution.getNya.customResolution = new Dimension(Solution.getNya.customResolution.width, 0);
                 } else {
-                    Window.currentResolution = true;
+                    Solution.getNya.currentResolution = true;
                     if (value.contains(">")) {
-                        Window.moreThanY = true;
+                        Solution.getNya.moreThanY = true;
                         value = value.substring(1);
                     }
-                    else Window.moreThanY = false;
+                    else Solution.getNya.moreThanY = false;
                     if (value.contains("<")) {
-                        Window.lessThanY = true;
+                        Solution.getNya.lessThanY = true;
                         value = value.substring(1);
                     }
-                    else Window.lessThanY = false;
-                    Window.customResolution = new Dimension(Window.customResolution.width, Integer.valueOf(value));
+                    else Solution.getNya.lessThanY = false;
+                    Solution.getNya.customResolution = new Dimension(Solution.getNya.customResolution.width, Integer.valueOf(value));
                 }
             }
         });
@@ -441,21 +441,21 @@ class SettingsPanel extends JPanel {
                 System.out.println(value.length());
                 System.out.println(value.contains(">"));
                 if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
-                    Window.currentResolution = false;
-                    Window.moreThanX = false;
-                    Window.lessThanX = false;
-                    Window.customResolution = new Dimension(0, Window.customResolution.height);
+                    Solution.getNya.currentResolution = false;
+                    Solution.getNya.moreThanX = false;
+                    Solution.getNya.lessThanX = false;
+                    Solution.getNya.customResolution = new Dimension(0, Solution.getNya.customResolution.height);
                 } else {
-                    Window.currentResolution = true;
+                    Solution.getNya.currentResolution = true;
                     if (value.contains(">")) {
-                        Window.moreThanX = true;
+                        Solution.getNya.moreThanX = true;
                         value = value.substring(1);
-                    } else Window.moreThanX = false;
+                    } else Solution.getNya.moreThanX = false;
                     if (value.contains("<")) {
-                        Window.lessThanX = true;
+                        Solution.getNya.lessThanX = true;
                         value = value.substring(1);
-                    } else Window.lessThanX = false;
-                    Window.customResolution = new Dimension(Integer.valueOf(value), Window.customResolution.height);
+                    } else Solution.getNya.lessThanX = false;
+                    Solution.getNya.customResolution = new Dimension(Integer.valueOf(value), Solution.getNya.customResolution.height);
                 }
             }
         });
