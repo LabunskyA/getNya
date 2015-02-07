@@ -47,7 +47,7 @@ class Window extends JFrame {
         return bufferedFullImage;
     }
 
-    Window() {
+    Window() { //Here i will create main window of the program
         super("getNya");
 
         try {
@@ -427,7 +427,14 @@ class SettingsPanel extends JPanel {
 
                     Solution.getNya.customResolution = new Dimension(Solution.getNya.customResolution.width, Integer.valueOf(value));
                 }
-                System.out.println(Solution.getNya.currentResolution + " " + Solution.getNya.moreThanY + " " + Solution.getNya.lessThanY + " " + Solution.getNya.customResolution);
+            }
+        });
+        heightScan.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if ( (c < '0' || c > '9') && c != '>' && c != '<' && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();  // ignore event
+                }
             }
         });
 
@@ -462,6 +469,14 @@ class SettingsPanel extends JPanel {
                         value = value.substring(1);
                     } else Solution.getNya.lessThanX = false;
                     Solution.getNya.customResolution = new Dimension(Integer.valueOf(value), Solution.getNya.customResolution.height);
+                }
+            }
+        });
+        widthScan.addKeyListener(new KeyAdapter() {
+            public void keyTyped(KeyEvent e) {
+                char c = e.getKeyChar();
+                if ( (c < '0' || c > '9') && c != '>' && c != '<' && c != KeyEvent.VK_BACK_SPACE) {
+                    e.consume();  // ignore event
                 }
             }
         });
@@ -521,7 +536,7 @@ class AboutPanel extends JPanel{
         super();
         setVisible(false);
 
-        JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nClose settings to save fields state\nUse '+' to search for multiple words tag.\nUse ' ' (space) as logical and in the text field.\nUse 'or' as logical or in text field.\nUse '>' and '<' before size in height and width\n fields to specify nya size.\n\nMade by Labunsky Artem");
+        JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\nUse ' ' (space) as logical and in the text field.\nUse 'or' as logical or in text field.\nUse '>' and '<' before size in height and width\n fields to specify nya size.\n\nMade by Labunsky Artem");
 
         aboutNya.setEnabled(false);
         aboutNya.setBackground(Color.WHITE);
