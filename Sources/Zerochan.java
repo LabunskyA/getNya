@@ -117,7 +117,7 @@ class Checker {
             if (Solution.getNya.lessThanX && nyaWidth > Solution.getNya.customResolution.width)
                 check = true;
 
-            if (!Solution.getNya.moreThanY && !Solution.getNya.moreThanX && !Solution.getNya.lessThanY && !Solution.getNya.lessThanX && (nyaHeight != Solution.getNya.customResolution.height || nyaWidth != Solution.getNya.customResolution.width))
+            if (!Solution.getNya.moreThanY && !Solution.getNya.moreThanX && !Solution.getNya.lessThanY && !Solution.getNya.lessThanX && ((nyaHeight != Solution.getNya.customResolution.height && nyaHeight != 0) || (nyaWidth != Solution.getNya.customResolution.width && nyaWidth != 0)))
                 check = true;
         }
 

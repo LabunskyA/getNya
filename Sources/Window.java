@@ -13,19 +13,20 @@ import java.net.MalformedURLException;
  * Protected with GNU GPLv2 and your honesty
  */
 class Window extends JFrame {
-    public Boolean currentResolution = false;
-    public Boolean moreThanX = false;
-    public Boolean lessThanX = false;
-    public Boolean moreThanY = false;
-    public Boolean lessThanY = false;
-    public Boolean settingsIsOpen = false;
-    public Boolean aboutIsOpen = false;
-    public Boolean useTag = false;
-    public Integer positionX;
-    public Integer positionY;
-    public Dimension customResolution = new Dimension(0, 0);
-    public final SettingsPanel settingsPanel = new SettingsPanel();
-    public final AboutPanel aboutPanel = new AboutPanel();
+    Boolean currentResolution = false;
+    Boolean moreThanX = false;
+    Boolean lessThanX = false;
+    Boolean moreThanY = false;
+    Boolean lessThanY = false;
+    Boolean settingsIsOpen = false;
+    Boolean aboutIsOpen = false;
+    Boolean useTag = false;
+    Integer positionX;
+    Integer positionY;
+    Dimension customResolution = new Dimension(0, 0);
+    final SettingsPanel settingsPanel = new SettingsPanel();
+    final AboutPanel aboutPanel = new AboutPanel();
+
     static String tag = "";
     static Boolean hdOnly = false;
     static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -98,6 +99,7 @@ class Window extends JFrame {
 
         settingsButtonsPanel.setLayout(new BoxLayout(settingsButtonsPanel, BoxLayout.X_AXIS));
         settingsButtonsPanel.setBackground(Color.WHITE);
+        settingsButtonsPanel.add(Box.createRigidArea(new Dimension(1, 0)));
         settingsButtonsPanel.add(nyaAbout);
         settingsButtonsPanel.add(nyaPrefs);
 
@@ -126,7 +128,7 @@ class Window extends JFrame {
         buttonsPanel.add(buttonsPaneSecondRigidArea);
         buttonsPanel.add(panelForSmallButtonsPanel);
         buttonsPanel.setBackground(Color.WHITE);
-        buttonsPanel.setPreferredSize(new Dimension(buttonsPanel.getWidth(), 48));
+        buttonsPanel.setPreferredSize(new Dimension(buttonsPanel.getWidth(), 41));
 
         dataField.setBackground(Color.BLACK);
         dataField.setHorizontalAlignment(SwingConstants.CENTER);
@@ -194,11 +196,11 @@ class Window extends JFrame {
             Dimension maximumSizeForTheFistArea;
             Dimension maximumSizeForTheSecondArea;
             Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
-            Integer maxContentPaneHeight = nyaImageHeight + 48 + dataField.getHeight();
+            Integer maxContentPaneHeight = nyaImageHeight + 41 + dataField.getHeight();
 
             //this on is for small screens, less then 720p
             if (screenSize.height < maxContentPaneHeight + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom || screenSize.width < nyaImageWidth) {
-                Image scaledImage = bufferedNyaImage.getScaledInstance(screenSize.height - 48 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, -1, Image.SCALE_FAST);
+                Image scaledImage = bufferedNyaImage.getScaledInstance(-1, screenSize.height - 41 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, Image.SCALE_FAST);
 
                 nyaLabel.setIcon(new ImageIcon(scaledImage));
 
@@ -206,15 +208,15 @@ class Window extends JFrame {
                 nyaImageWidth = toBufferedImage(scaledImage).getWidth();
             } else if (getExtendedState() == Frame.NORMAL)
                 nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
-            else if (nyaFullHeight < screenSize.height - 48 - dataField.getHeight() && nyaFullWidth < screenSize.width - 10) {
+            else if (nyaFullHeight < screenSize.height - 41 - dataField.getHeight() && nyaFullWidth < screenSize.width - 10) {
                 nyaLabel.setIcon(new ImageIcon(bufferedFullImage));
                 nyaImageHeight = bufferedFullImage.getHeight();
                 nyaImageWidth = bufferedFullImage.getWidth();
             }
             else { //mmm, FULLSCREEN
                 BufferedImage fullscreenNya = bufferedFullImage;
-                if (nyaFullHeight >= screenSize.height - dataField.getHeight() - 48)
-                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(-1, screenSize.height - 48 - dataField.getHeight(), Image.SCALE_SMOOTH));
+                if (nyaFullHeight >= screenSize.height - dataField.getHeight() - 41)
+                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(-1, screenSize.height - 41 - dataField.getHeight(), Image.SCALE_SMOOTH));
 
                 if (fullscreenNya.getWidth() >= screenSize.width)
                     fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
@@ -225,11 +227,11 @@ class Window extends JFrame {
             }
 
             if (getExtendedState() == Frame.NORMAL && (nyaImageWidth - 206) / 2 - 48 >= 0) {
-                maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 48);
-                maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 48);
-            } else if ((nyaImageWidth - 206) / 2 - 48 >= 0){
-                maximumSizeForTheFistArea = new Dimension((screenSize.width - 206) / 2 - 32, 48);
-                maximumSizeForTheSecondArea = new Dimension((screenSize.width - 206) / 2 - 32, 48);
+                maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 41);
+                maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 41);
+            } else if ((nyaImageWidth - 206) / 2 - 41 >= 0){
+                maximumSizeForTheFistArea = new Dimension((screenSize.width - 206) / 2 - 32, 41);
+                maximumSizeForTheSecondArea = new Dimension((screenSize.width - 206) / 2 - 32, 41);
             } else {
                 maximumSizeForTheFistArea = new Dimension(0, 0);
                 maximumSizeForTheSecondArea = new Dimension(0, 0);
@@ -237,7 +239,7 @@ class Window extends JFrame {
 
             dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
             dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
-            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - nyaImageHeight - dataField.getHeight() - 48) / 2));
+            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - nyaImageHeight - dataField.getHeight() - 41) / 2));
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
             buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
             setMinimumSize(minimumWindowSize);
@@ -403,7 +405,8 @@ class SettingsPanel extends JPanel {
             public void warn() {
                 String value = SettingsPanel.heightScan.getText();
                 if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
-                    Solution.getNya.currentResolution = false;
+                    if (SettingsPanel.widthScan.getText().length() == 0)
+                        Solution.getNya.currentResolution = false;
                     Solution.getNya.moreThanY = false;
                     Solution.getNya.lessThanY = false;
                     Solution.getNya.customResolution = new Dimension(Solution.getNya.customResolution.width, 0);
@@ -413,14 +416,18 @@ class SettingsPanel extends JPanel {
                         Solution.getNya.moreThanY = true;
                         value = value.substring(1);
                     }
-                    else Solution.getNya.moreThanY = false;
+                    else
+                        Solution.getNya.moreThanY = false;
                     if (value.contains("<")) {
                         Solution.getNya.lessThanY = true;
                         value = value.substring(1);
                     }
-                    else Solution.getNya.lessThanY = false;
+                    else
+                        Solution.getNya.lessThanY = false;
+
                     Solution.getNya.customResolution = new Dimension(Solution.getNya.customResolution.width, Integer.valueOf(value));
                 }
+                System.out.println(Solution.getNya.currentResolution + " " + Solution.getNya.moreThanY + " " + Solution.getNya.lessThanY + " " + Solution.getNya.customResolution);
             }
         });
 
@@ -438,10 +445,9 @@ class SettingsPanel extends JPanel {
 
             public void warn() {
                 String value = SettingsPanel.widthScan.getText();
-                System.out.println(value.length());
-                System.out.println(value.contains(">"));
                 if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
-                    Solution.getNya.currentResolution = false;
+                    if (SettingsPanel.heightScan.getText().length() == 0)
+                        Solution.getNya.currentResolution = false;
                     Solution.getNya.moreThanX = false;
                     Solution.getNya.lessThanX = false;
                     Solution.getNya.customResolution = new Dimension(0, Solution.getNya.customResolution.height);
