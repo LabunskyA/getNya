@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
  */
 class Solution {
     static final Window getNya = new Window();
+    static final WelcomeLogo welcomeLogo = new WelcomeLogo();
 
     public static void main(String[] args) throws MalformedURLException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -15,6 +16,8 @@ class Solution {
         getNya.addWindowStateListener(new WindowStateListener());
         getNya.drawNya();
         getNya.setVisible(true);
+        welcomeLogo.setVisible(false);
         getNya.pack();
+        getNya.setLocationRelativeTo(null);
     }
 }

@@ -5,6 +5,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -545,5 +546,26 @@ class AboutPanel extends JPanel{
 
         setLayout(new BorderLayout());
         add(aboutNya, BorderLayout.CENTER);
+    }
+}
+
+class WelcomeLogo extends JFrame{
+    WelcomeLogo() {
+        BufferedImage logo = null;
+        try {
+            logo = ImageIO.read(getClass().getResource("/resources/getNya.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        JLabel logoImage = new JLabel();
+
+        assert logo != null;
+        logoImage.setIcon(new ImageIcon(logo.getScaledInstance(300, -1, Image.SCALE_FAST)));
+
+        add(logoImage);
+        setUndecorated(true);
+        setVisible(true);
+        pack();
+        setLocationRelativeTo(null);
     }
 }
