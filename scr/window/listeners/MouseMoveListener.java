@@ -21,22 +21,17 @@ public class MouseMoveListener extends NyaListener implements MouseListener {
     }
 
     public void mousePressed(MouseEvent e) {
-        getNya.positionX = e.getX();
-        getNya.positionY = e.getY();
+        getNya.setPositionX(e.getX());
+        getNya.setPositionY(e.getY());
     }
 
+    /**
+     * Not used interface methods
+     * */
     @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
+    public void mouseReleased(MouseEvent e) {}
     @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
+    public void mouseEntered(MouseEvent e) {}
     @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
+    public void mouseExited(MouseEvent e) {}
 }

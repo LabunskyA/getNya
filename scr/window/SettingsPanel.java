@@ -17,16 +17,12 @@ import java.awt.event.KeyEvent;
  */
 @SuppressWarnings("WeakerAccess")
 public class SettingsPanel extends JPanel {
-    private final Window getNya;
-
     private final JTextField widthScan = new JTextField();
     private final JTextField heightScan = new JTextField();
     private final JTextField tag = new JTextField();
 
     SettingsPanel(Window getNya) {
         super();
-
-        this.getNya = getNya;
 
         setVisible(false);
 
@@ -49,13 +45,13 @@ public class SettingsPanel extends JPanel {
 
         ActionListener getPrevNya = new GetPrevNya(getNya);
 
-        hdCheckBox.addItemListener(e -> getNya.hdOnly = !getNya.hdOnly);
+        hdCheckBox.addItemListener(e -> getNya.setHdOnly(!getNya.isHdOnly()));
         prevNya.addActionListener(getPrevNya);
 
         height.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         width.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        tag.setText(getNya.tag);
+        tag.setText(getNya.getTag());
         tag.setPreferredSize(new Dimension(100, 20));
         tag.setBackground(Color.WHITE);
         tag.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -77,11 +73,11 @@ public class SettingsPanel extends JPanel {
 
             public void warn() {
                 if (tag.getText().length() == 0) {
-                    getNya.useTag = false;
-                    getNya.tag = "";
+                    getNya.setUseTag(false);
+                    getNya.setTag("");
                 } else {
-                    getNya.useTag = true;
-                    getNya.tag = tag.getText().toLowerCase();
+                    getNya.setUseTag(true);
+                    getNya.setTag(tag.getText().toLowerCase());
                 }
             }
         });
@@ -102,24 +98,24 @@ public class SettingsPanel extends JPanel {
                 String value = heightScan.getText();
                 if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
                     if (widthScan.getText().length() == 0)
-                        getNya.currentResolution = false;
+                        getNya.setCurrentResolution(false);
 
-                    getNya.moreThanY = false;
-                    getNya.lessThanY = false;
+                    getNya.setMoreThanY(false);
+                    getNya.setLessThanY(false);
 
                     getNya.customResolution = new Dimension(getNya.customResolution.width, 0);
                 } else {
-                    getNya.currentResolution = true;
+                    getNya.setCurrentResolution(true);
 
                     if (value.contains(">")) {
-                        getNya.moreThanY = true;
+                        getNya.setMoreThanY(true);
                         value = value.substring(1);
-                    } else getNya.moreThanY = false;
+                    } else getNya.setMoreThanY(false);
 
                     if (value.contains("<")) {
-                        getNya.lessThanY = true;
+                        getNya.setLessThanY(true);
                         value = value.substring(1);
-                    } else getNya.lessThanY = false;
+                    } else getNya.setLessThanY(false);
 
                     getNya.customResolution = new Dimension(getNya.customResolution.width, Integer.valueOf(value));
                 }
@@ -151,24 +147,24 @@ public class SettingsPanel extends JPanel {
 
                 if (value.length() == 0 || value.length() == 1 && (value.contains(">") || value.contains("<"))) {
                     if (heightScan.getText().length() == 0)
-                        getNya.currentResolution = false;
+                        getNya.setCurrentResolution(false);
 
-                    getNya.moreThanX = false;
-                    getNya.lessThanX = false;
+                    getNya.setMoreThanX(false);
+                    getNya.setLessThanX(false);
 
                     getNya.customResolution = new Dimension(0, getNya.customResolution.height);
                 } else {
-                    getNya.currentResolution = true;
+                    getNya.setCurrentResolution(true);
 
                     if (value.contains(">")) {
-                        getNya.moreThanX = true;
+                        getNya.setMoreThanX(true);
                         value = value.substring(1);
-                    } else getNya.moreThanX = false;
+                    } else getNya.setMoreThanX(false);
 
                     if (value.contains("<")) {
-                        getNya.lessThanX = true;
+                        getNya.setLessThanX(true);
                         value = value.substring(1);
-                    } else getNya.lessThanX = false;
+                    } else getNya.setLessThanX(false);
 
                     getNya.customResolution = new Dimension(Integer.valueOf(value), getNya.customResolution.height);
                 }
@@ -226,7 +222,7 @@ public class SettingsPanel extends JPanel {
 
         setBackground(Color.WHITE);
 
-        if (getNya.hdOnly)
+        if (getNya.isHdOnly())
             hdCheckBox.setState(true);
         else hdCheckBox.setState(false);
     }

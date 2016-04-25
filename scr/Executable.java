@@ -10,7 +10,7 @@ import java.net.MalformedURLException;
  * Created by LabunskyA
  * Protected with GNU GPLv2 and your honesty
  */
-class Solution {
+class Executable {
     public static void main(String[] args) throws MalformedURLException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException, ClassNotFoundException {
         Window getNya = new Window();
         WelcomeLogo welcomeLogo = new WelcomeLogo();

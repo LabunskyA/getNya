@@ -10,7 +10,7 @@ import java.util.EventListener;
  * VK: vk.com/labunsky
  */
 abstract class NyaListener implements EventListener {
-    protected final Window getNya;
+    final Window getNya;
 
     NyaListener(Window getNya) {
         this.getNya = getNya;

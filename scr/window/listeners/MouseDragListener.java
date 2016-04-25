@@ -18,7 +18,7 @@ public class MouseDragListener extends NyaListener implements MouseMotionListene
 
     public void mouseDragged(MouseEvent e) {
         if (getNya.getExtendedState() == Frame.NORMAL)
-            getNya.setLocation(e.getXOnScreen() - getNya.positionX, e.getYOnScreen() - getNya.positionY);
+            getNya.setLocation(e.getXOnScreen() - getNya.getPositionX(), e.getYOnScreen() - getNya.getPositionY());
     }
 
     @Override

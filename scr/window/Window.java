@@ -20,27 +20,29 @@ import java.net.MalformedURLException;
  * Protected with GNU GPLv2 and your honesty
  */
 public class Window extends JFrame {
-    public Boolean currentResolution = false;
+    private Boolean currentResolution = false;
 
-    public Boolean moreThanX = false;
-    public Boolean lessThanX = false;
+    private Boolean moreThanX = false;
+    private Boolean lessThanX = false;
 
-    public Boolean moreThanY = false;
-    public Boolean lessThanY = false;
+    private Boolean moreThanY = false;
+    private Boolean lessThanY = false;
 
-    public Boolean settingsIsOpen = false;
-    public Boolean aboutIsOpen = false;
+    private Boolean settingsIsOpen = false;
+    private Boolean aboutIsOpen = false;
 
-    public Boolean useTag = false;
+    private Boolean useTag = false;
 
-    public Integer positionX;
-    public Integer positionY;
+    private Integer positionX;
+    private Integer positionY;
 
-    public String tag = "";
-    public Boolean hdOnly = false;
+    private String tag = "";
+    private Boolean hdOnly = false;
 
-    public final SettingsPanel settingsPanel = new SettingsPanel(this);
-    public final AboutPanel aboutPanel = new AboutPanel();
+    private final SettingsPanel settingsPanel = new SettingsPanel(this);
+    private final AboutPanel aboutPanel = new AboutPanel();
+
+    private final LittleParser littleParser = new LittleParser();
 
     public Dimension customResolution = new Dimension(0, 0);
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -79,8 +81,8 @@ public class Window extends JFrame {
         ActionListener exitNya = new CloseNya();
         ActionListener maximizeNyaWindow = new MaximizeNya(this);
         ActionListener minimizeNyaWindow = new MinimizeNya(this);
-        ActionListener nyaSettings = new Settings(this);
-        ActionListener aboutDialog = new About(this);
+        ActionListener nyaSettings = new ServicePanelListener(this, settingsPanel, ServicePanelListener.Panel.SETTINGS);
+        ActionListener aboutDialog = new ServicePanelListener(this, aboutPanel, ServicePanelListener.Panel.ABOUT);
 
         MouseMoveListener mouseMove = new MouseMoveListener(this);
         MouseMotionListener mouseDrag = new MouseDragListener(this);
@@ -99,6 +101,7 @@ public class Window extends JFrame {
         JPanel settingsButtonsPanel = new JPanel();
         JPanel panelForSettingsPanel = new JPanel();
         JPanel settingsAndAboutPanel = new JPanel();
+
         nyaLabel = new JLabel();
         dataField = new JTextField();
 
@@ -182,7 +185,7 @@ public class Window extends JFrame {
 
         Boolean check = true;
         Checker checker = new Checker(this);
-        LittleParser littleParser = new LittleParser();
+
         Zerochan.prevFull = Zerochan.fullURL;
         Zerochan.prevURL = Zerochan.nyaURL;
 
@@ -191,7 +194,7 @@ public class Window extends JFrame {
                 Zerochan.generateNumberNya();
                 Zerochan.generateURLs();
 
-                check = checker.CheckTag(littleParser, true);
+                check = checker.CheckTag(littleParser);
             }
             try {
                 bufferedFullImage = ImageIO.read(Zerochan.fullURL);
@@ -202,18 +205,23 @@ public class Window extends JFrame {
             } catch (IOException e) { check = true; } //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
 
         }
+
         draw();
     }
 
     public void draw() {
         try {
             Robot mouseMover = new Robot();
+
             bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
+
             Integer nyaImageHeight = bufferedNyaImage.getHeight();
             Integer nyaImageWidth = bufferedNyaImage.getWidth();
+
             Dimension maximumSizeForTheFistArea;
             Dimension maximumSizeForTheSecondArea;
             Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
+
             Integer maxContentPaneHeight = nyaImageHeight + 41 + dataField.getHeight();
 
             //this on is for small screens, less then 720p
@@ -230,8 +238,7 @@ public class Window extends JFrame {
                 nyaLabel.setIcon(new ImageIcon(bufferedFullImage));
                 nyaImageHeight = bufferedFullImage.getHeight();
                 nyaImageWidth = bufferedFullImage.getWidth();
-            }
-            else { //mmm, FULLSCREEN
+            } else { //mmm, FULLSCREEN
                 BufferedImage fullscreenNya = bufferedFullImage;
                 if (nyaFullHeight >= screenSize.height - dataField.getHeight() - 41)
                     fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(-1, screenSize.height - 41 - dataField.getHeight(), Image.SCALE_SMOOTH));
@@ -257,7 +264,8 @@ public class Window extends JFrame {
 
             dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
             dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
-            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth, (screenSize.height - nyaImageHeight - dataField.getHeight() - 41) / 2));
+            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth,
+                                                (screenSize.height - nyaImageHeight - dataField.getHeight() - 41) / 2));
             buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
             buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
             setMinimumSize(minimumWindowSize);
@@ -272,8 +280,7 @@ public class Window extends JFrame {
                 setMinimumSize(getSize());
                 pack();
                 setMinimumSize(null);
-            } else
-                pack();
+            } else pack();
 
             settingsPanel.setVisible(settingsIsOpen);
             aboutPanel.setVisible(aboutIsOpen);
@@ -283,20 +290,19 @@ public class Window extends JFrame {
             if (getExtendedState() == Frame.NORMAL)
                 mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
         } catch (IOException | AWTException ignored) {}
+
+        System.gc();
     }
 
     public void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal
         if (normal) {
             setSize(bufferedNyaImage.getWidth(), bufferedNyaImage.getHeight() + buttonsPanel.getHeight() + dataField.getHeight());
             nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
-        }
-        else//if maximized
-            draw();
+        } else draw();
     }
 
     private BufferedImage toBufferedImage(Image img){
-        if (img instanceof BufferedImage)
-        {
+        if (img instanceof BufferedImage) {
             return (BufferedImage) img;
         }
 
@@ -310,6 +316,105 @@ public class Window extends JFrame {
 
         // Return the buffered image
         return bimage;
+    }
+
+    /**
+     * Getters and setters section
+     */
+    public Boolean getCurrentResolution() {
+        return currentResolution;
+    }
+
+    void setCurrentResolution(Boolean currentResolution) {
+        this.currentResolution = currentResolution;
+    }
+
+    public Boolean getMoreThanX() {
+        return moreThanX;
+    }
+
+    void setMoreThanX(Boolean moreThanX) {
+        this.moreThanX = moreThanX;
+    }
+
+    public Boolean getLessThanX() {
+        return lessThanX;
+    }
+
+    void setLessThanX(Boolean lessThanX) {
+        this.lessThanX = lessThanX;
+    }
+
+    public Boolean getMoreThanY() {
+        return moreThanY;
+    }
+
+    void setMoreThanY(Boolean moreThanY) {
+        this.moreThanY = moreThanY;
+    }
+
+    public Boolean getLessThanY() {
+        return lessThanY;
+    }
+
+    void setLessThanY(Boolean lessThanY) {
+        this.lessThanY = lessThanY;
+    }
+
+    public Boolean getAboutIsOpen() {
+        return aboutIsOpen;
+    }
+
+    public void setAboutIsOpen(Boolean aboutIsOpen) {
+        this.aboutIsOpen = aboutIsOpen;
+    }
+
+    public Boolean getUseTag() {
+        return useTag;
+    }
+
+    void setUseTag(Boolean useTag) {
+        this.useTag = useTag;
+    }
+
+    public Integer getPositionX() {
+        return positionX;
+    }
+
+    public void setPositionX(Integer positionX) {
+        this.positionX = positionX;
+    }
+
+    public Integer getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionY(Integer positionY) {
+        this.positionY = positionY;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public Boolean isHdOnly() {
+        return hdOnly;
+    }
+
+    void setHdOnly(Boolean hdOnly) {
+        this.hdOnly = hdOnly;
+    }
+
+    public Boolean getSettingsIsOpen() {
+        return settingsIsOpen;
+    }
+
+    public void setSettingsIsOpen(boolean settingsIsOpen) {
+        this.settingsIsOpen = settingsIsOpen;
     }
 }
 

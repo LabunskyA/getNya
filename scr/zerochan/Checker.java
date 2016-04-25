@@ -16,9 +16,11 @@ public class Checker {
         this.getNya = getNya;
     }
 
-    public boolean CheckTag(LittleParser littleParser, Boolean check) throws MalformedURLException {
-        if (getNya.useTag) {
-            String[] or = getNya.tag.split("or ");
+    public boolean CheckTag(LittleParser littleParser) throws MalformedURLException {
+        Boolean check = true;
+
+        if (getNya.getUseTag()) {
+            String[] or = getNya.getTag().split("or ");
 
             for (String tags : or) {
                 Integer tagNumContains = 0;
@@ -30,6 +32,7 @@ public class Checker {
                             parseResult.contains(tag + " ") || parseResult.contains(tag + "<"))) //fixed?
                         tagNumContains++;
                 }
+
                 if (tagNumContains == splitedTags.length)
                     check = false;
             }
@@ -39,23 +42,20 @@ public class Checker {
     }
 
     public boolean CheckSize(Integer nyaWidth, Integer nyaHeight, Boolean check) {
-        if (getNya.hdOnly && (nyaWidth < 1920 || nyaHeight < 1080))
+        if (getNya.isHdOnly() && (nyaWidth < 1920 || nyaHeight < 1080))
             check = true;
 
-        if (getNya.currentResolution) {
-            if (getNya.moreThanY && nyaHeight < getNya.customResolution.height)
-                check = true;
-            if (getNya.lessThanY && nyaHeight > getNya.customResolution.height)
-                check = true;
-            if (getNya.moreThanX && nyaWidth < getNya.customResolution.width)
-                check = true;
-            if (getNya.lessThanX && nyaWidth > getNya.customResolution.width)
-                check = true;
+        if (getNya.getCurrentResolution()) {
+            check = check ||
+                    (getNya.getMoreThanY() && nyaHeight < getNya.customResolution.height) ||
+                    (getNya.getLessThanY() && nyaHeight > getNya.customResolution.height) ||
+                    (getNya.getMoreThanX() && nyaWidth < getNya.customResolution.width) ||
+                    (getNya.getLessThanX() && nyaWidth > getNya.customResolution.width);
 
-            if (!getNya.moreThanY && !getNya.moreThanX && !getNya.lessThanY && !getNya.lessThanX && (
-                            (nyaHeight != getNya.customResolution.height && nyaHeight != 0) ||
-                                    (nyaWidth != getNya.customResolution.width && nyaWidth != 0)
-            ))
+            if (!getNya.getMoreThanY() && !getNya.getMoreThanX() && !getNya.getLessThanY() && !getNya.getLessThanX() &&
+                    ((nyaHeight != getNya.customResolution.height && nyaHeight != 0) ||
+                                    (nyaWidth != getNya.customResolution.width && nyaWidth != 0))
+                                                                                                    )
                 check = true;
         }
 
