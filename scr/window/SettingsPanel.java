@@ -6,9 +6,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 /**
  * Created by LabunskyA
@@ -21,7 +19,7 @@ public class SettingsPanel extends JPanel {
     private final JTextField heightScan = new JTextField();
     private final JTextField tag = new JTextField();
 
-    SettingsPanel(Window getNya) {
+    SettingsPanel(final Window getNya) {
         super();
 
         setVisible(false);
@@ -45,7 +43,13 @@ public class SettingsPanel extends JPanel {
 
         ActionListener getPrevNya = new GetPrevNya(getNya);
 
-        hdCheckBox.addItemListener(e -> getNya.setHdOnly(!getNya.isHdOnly()));
+        hdCheckBox.addItemListener(new ItemListener(){
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                getNya.setHdOnly(!getNya.isHdOnly());
+            }
+        });
+
         prevNya.addActionListener(getPrevNya);
 
         height.setBorder(BorderFactory.createLineBorder(Color.BLACK));
