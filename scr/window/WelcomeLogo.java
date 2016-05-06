@@ -13,6 +13,13 @@ import java.io.IOException;
  */
 public class WelcomeLogo extends JFrame {
     public WelcomeLogo() {
+        try {
+            setIconImage(new ImageIcon(ImageIO.read(getClass().getResource("resources/Nya.png"))).getImage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
         BufferedImage logo = null;
         try {
             logo = ImageIO.read(getClass().getResource("resources/getNya.png"));

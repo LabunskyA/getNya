@@ -71,7 +71,10 @@ public class Window extends JFrame {
 
         try {
             setIconImage(new ImageIcon(ImageIO.read(getClass().getResource("resources/Nya.png"))).getImage());
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
