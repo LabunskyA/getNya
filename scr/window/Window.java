@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
@@ -71,7 +70,7 @@ public class Window extends JFrame {
         super("getNya");
 
         try {
-            setIconImage(new ImageIcon(ImageIO.read(new File("resources/Nya.png"))).getImage());
+            setIconImage(new ImageIcon(ImageIO.read(getClass().getResource("resources/Nya.png"))).getImage());
         } catch (IOException ignored) {}
 
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -302,9 +301,8 @@ public class Window extends JFrame {
     }
 
     private BufferedImage toBufferedImage(Image img){
-        if (img instanceof BufferedImage) {
+        if (img instanceof BufferedImage)
             return (BufferedImage) img;
-        }
 
         // Create a buffered image with transparency
         BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);

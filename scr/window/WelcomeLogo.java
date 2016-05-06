@@ -4,7 +4,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -16,7 +15,7 @@ public class WelcomeLogo extends JFrame {
     public WelcomeLogo() {
         BufferedImage logo = null;
         try {
-            logo = ImageIO.read(new File("resources/getNya.png"));
+            logo = ImageIO.read(getClass().getResource("resources/getNya.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
