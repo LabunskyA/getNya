@@ -88,12 +88,12 @@ public class Window extends JFrame {
         MouseMotionListener mouseDrag = new MouseDragListener(this);
 
         getNya = new SimpleButton("resources/getNya.png", "resources/getNyaPressed.png");
-        SimpleButton saveNya = new SimpleButton("resources/saveNya.png", "resources/saveNyaPressed.png");
-        SimpleButton closeNya = new SimpleButton("resources/closeNya.png");
-        SimpleButton maximizeNya = new SimpleButton("resources/maximizeNya.png");
-        SimpleButton minimizeNya = new SimpleButton("resources/minimizeNya.png");
-        SimpleButton nyaPrefs = new SimpleButton("resources/nyaPrefs.png");
-        SimpleButton nyaAbout = new SimpleButton("resources/nyaAbout.png");
+        JToggleButton saveNya = new SimpleButton("resources/saveNya.png", "resources/saveNyaPressed.png");
+        JToggleButton closeNya = new SimpleButton("resources/closeNya.png");
+        JToggleButton maximizeNya = new SimpleButton("resources/maximizeNya.png");
+        JToggleButton minimizeNya = new SimpleButton("resources/minimizeNya.png");
+        JToggleButton nyaPrefs = new SimpleButton("resources/nyaPrefs.png");
+        JToggleButton nyaAbout = new SimpleButton("resources/nyaAbout.png");
 
         JPanel centralPanel = new JPanel();
         JPanel smallButtonsPanel = new JPanel();
