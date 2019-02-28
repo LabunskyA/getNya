@@ -23,12 +23,12 @@ public class LittleParser {
             InputStream inputStream = url.openConnection().getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
 
-            int numCharsRead;
-            char[] charArray = new char[1024];
+            int read;
+            char[] chars = new char[2048];
 
-            while ((numCharsRead = inputStreamReader.read(charArray)) > 0) {
-                stringBuffer.append(charArray, 0, numCharsRead);
-            }
+            while ((read = inputStreamReader.read(chars)) > 0)
+                stringBuffer.append(chars, 0, read);
+
             inputStream.close();
             inputStreamReader.close();
         } catch (IOException e) {
@@ -36,9 +36,9 @@ public class LittleParser {
         }
 
         if (type == TAG ) {
-            String result = "";
-            if (stringBuffer.toString().contains("<ul id=\"tags\">")) {
-                result = stringBuffer.toString().substring(stringBuffer.toString().indexOf("<ul id=\"tags\">"));
+            String result = stringBuffer.toString();
+            if (result.contains("<ul id=\"tags\">")) {
+                result = result.substring(stringBuffer.toString().indexOf("<ul id=\"tags\">"));
                 result = result.substring(0, result.indexOf("/ul")).toLowerCase();
             }
 

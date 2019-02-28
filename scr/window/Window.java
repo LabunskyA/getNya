@@ -47,12 +47,12 @@ public class Window extends JFrame {
     private final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     private BufferedImage bufferedNyaImage;
-    private BufferedImage bufferedFullImage;
+    private BufferedImage fullImage;
 
     private Integer nyaFullHeight;
     private Integer nyaFullWidth;
 
-    private JLabel nyaLabel = new JLabel();
+    private JLabel nyaLabel;
 
     private final JTextField dataField;
     private final JPanel buttonsPanel = new JPanel();
@@ -62,8 +62,8 @@ public class Window extends JFrame {
     private final Component buttonsPanelFirstRigidArea = Box.createRigidArea(new Dimension(0, 0));
     private final Component buttonsPaneSecondRigidArea = Box.createRigidArea(new Dimension(0, 0));
 
-    public BufferedImage getBufferedFullImage() {
-        return bufferedFullImage;
+    public BufferedImage getFullImage() {
+        return fullImage;
     }
 
     public Window() { //Here i will create main window of the program
@@ -185,7 +185,7 @@ public class Window extends JFrame {
     public void drawNya() throws MalformedURLException {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-        Boolean check = true;
+        boolean check = true;
         Checker checker = new Checker(this);
 
         Zerochan.prevFull = Zerochan.fullURL;
@@ -198,14 +198,15 @@ public class Window extends JFrame {
 
                 check = checker.CheckTag(littleParser);
             }
+
             try {
-                bufferedFullImage = ImageIO.read(Zerochan.fullURL);
-                nyaFullHeight = bufferedFullImage.getHeight();
-                nyaFullWidth = bufferedFullImage.getWidth();
+                fullImage = ImageIO.read(Zerochan.fullURL);
 
-                check = checker.CheckSize(nyaFullWidth, nyaFullHeight, check);
-            } catch (IOException e) { check = true; } //sometimes Zerochan.net blocks some pictures, so I need to handle this occasion and get another url with another picture
+                nyaFullHeight = fullImage.getHeight();
+                nyaFullWidth = fullImage.getWidth();
 
+                check = checker.checkSize(nyaFullWidth, nyaFullHeight, check);
+            } catch (IOException e) { check = true; } // sometimes Zerochan.net will block some pictures
         }
 
         draw();
@@ -217,18 +218,24 @@ public class Window extends JFrame {
 
             bufferedNyaImage = ImageIO.read(Zerochan.nyaURL);
 
-            Integer nyaImageHeight = bufferedNyaImage.getHeight();
-            Integer nyaImageWidth = bufferedNyaImage.getWidth();
+            int nyaImageHeight = bufferedNyaImage.getHeight();
+            int nyaImageWidth = bufferedNyaImage.getWidth();
 
-            Dimension maximumSizeForTheFistArea;
-            Dimension maximumSizeForTheSecondArea;
-            Dimension minimumWindowSize = new Dimension(297, 0); //just buttons size
+            Dimension maxSizeFistArea;
+            Dimension maxSizeSecondArea;
+            Dimension minWindowSize = new Dimension(297, 0);
 
-            Integer maxContentPaneHeight = nyaImageHeight + 41 + dataField.getHeight();
+            int maxContentPaneHeight = nyaImageHeight + 41 + dataField.getHeight();
 
-            //this on is for small screens, less then 720p
-            if (screenSize.height < maxContentPaneHeight + Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom || screenSize.width < nyaImageWidth) {
-                Image scaledImage = bufferedNyaImage.getScaledInstance(-1, screenSize.height - 41 - Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom, Image.SCALE_FAST);
+            // this on is for the small screens, less then 720p
+            if (screenSize.height < maxContentPaneHeight + Toolkit.getDefaultToolkit()
+                    .getScreenInsets(getGraphicsConfiguration()).bottom || screenSize.width < nyaImageWidth) {
+                Image scaledImage = bufferedNyaImage.getScaledInstance(
+                        -1,
+                        screenSize.height - 41 -
+                                Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration()).bottom,
+                        Image.SCALE_FAST
+                );
 
                 nyaLabel.setIcon(new ImageIcon(scaledImage));
 
@@ -237,16 +244,22 @@ public class Window extends JFrame {
             } else if (getExtendedState() == Frame.NORMAL)
                 nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
             else if (nyaFullHeight < screenSize.height - 41 - dataField.getHeight() && nyaFullWidth < screenSize.width - 10) {
-                nyaLabel.setIcon(new ImageIcon(bufferedFullImage));
-                nyaImageHeight = bufferedFullImage.getHeight();
-                nyaImageWidth = bufferedFullImage.getWidth();
-            } else { //mmm, FULLSCREEN
-                BufferedImage fullscreenNya = bufferedFullImage;
+                nyaLabel.setIcon(new ImageIcon(fullImage));
+                nyaImageHeight = fullImage.getHeight();
+                nyaImageWidth = fullImage.getWidth();
+            } else { // FULLSCREEN
+                BufferedImage fullscreenNya = fullImage;
                 if (nyaFullHeight >= screenSize.height - dataField.getHeight() - 41)
-                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(-1, screenSize.height - 41 - dataField.getHeight(), Image.SCALE_SMOOTH));
+                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(
+                            -1,
+                            screenSize.height - 41 - dataField.getHeight(),
+                            Image.SCALE_SMOOTH
+                    ));
 
                 if (fullscreenNya.getWidth() >= screenSize.width)
-                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(screenSize.width, -1, Image.SCALE_SMOOTH));
+                    fullscreenNya = toBufferedImage(fullscreenNya.getScaledInstance(
+                            screenSize.width, -1, Image.SCALE_SMOOTH
+                    ));
 
                 nyaLabel.setIcon(new ImageIcon(fullscreenNya));
                 nyaImageHeight = fullscreenNya.getHeight();
@@ -254,25 +267,29 @@ public class Window extends JFrame {
             }
 
             if (getExtendedState() == Frame.NORMAL && (nyaImageWidth - 206) / 2 - 48 >= 0) {
-                maximumSizeForTheFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 41);
-                maximumSizeForTheSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 41);
+                maxSizeFistArea = new Dimension((nyaImageWidth - 206) / 2 - 32, 41);
+                maxSizeSecondArea = new Dimension((nyaImageWidth - 206) / 2 - 48, 41);
             } else if ((nyaImageWidth - 206) / 2 - 41 >= 0){
-                maximumSizeForTheFistArea = new Dimension((screenSize.width - 206) / 2 - 32, 41);
-                maximumSizeForTheSecondArea = new Dimension((screenSize.width - 206) / 2 - 32, 41);
+                maxSizeFistArea = new Dimension((screenSize.width - 206) / 2 - 32, 41);
+                maxSizeSecondArea = new Dimension((screenSize.width - 206) / 2 - 32, 41);
             } else {
-                maximumSizeForTheFistArea = new Dimension(0, 0);
-                maximumSizeForTheSecondArea = new Dimension(0, 0);
+                maxSizeFistArea = new Dimension(0, 0);
+                maxSizeSecondArea = new Dimension(0, 0);
             }
 
             dataField.setText("Width: " + nyaFullWidth + " Height: " + nyaFullHeight);
             dataField.setMaximumSize(new Dimension(nyaImageWidth, dataField.getHeight()));
-            northRigidArea.setMaximumSize(new Dimension(nyaImageWidth,
-                                                (screenSize.height - nyaImageHeight - dataField.getHeight() - 41) / 2));
-            buttonsPanelFirstRigidArea.setMaximumSize(maximumSizeForTheFistArea);
-            buttonsPaneSecondRigidArea.setMaximumSize(maximumSizeForTheSecondArea);
-            setMinimumSize(minimumWindowSize);
 
-            //this will not allow window to set it's width to settings panel width + image width
+            northRigidArea.setMaximumSize(new Dimension(
+                    nyaImageWidth,
+                    (screenSize.height - nyaImageHeight - dataField.getHeight() - 41) / 2
+            ));
+
+            buttonsPanelFirstRigidArea.setMaximumSize(maxSizeFistArea);
+            buttonsPaneSecondRigidArea.setMaximumSize(maxSizeSecondArea);
+            setMinimumSize(minWindowSize);
+
+            // this will not allow window to set its width to the settings panel width + image width
             if (settingsIsOpen)
                 settingsPanel.setVisible(false);
             if (aboutIsOpen)
@@ -290,15 +307,18 @@ public class Window extends JFrame {
             setCursor(Cursor.getDefaultCursor());
 
             if (getExtendedState() == Frame.NORMAL)
-                mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40); //102 is the width of buttons
+                mouseMover.mouseMove(getNya.getX() + getX() + 50, getY() + nyaImageHeight + 40);
         } catch (IOException | AWTException ignored) {}
 
         System.gc();
     }
 
-    public void setWindowSizeNormal(Boolean normal) { //I need it to resize window every time when it changes state from maximized to normal
+    public void setWindowSizeNormal(Boolean normal) {
         if (normal) {
-            setSize(bufferedNyaImage.getWidth(), bufferedNyaImage.getHeight() + buttonsPanel.getHeight() + dataField.getHeight());
+            setSize(
+                    bufferedNyaImage.getWidth(),
+                    bufferedNyaImage.getHeight() + buttonsPanel.getHeight() + dataField.getHeight()
+            );
             nyaLabel.setIcon(new ImageIcon(bufferedNyaImage));
         } else draw();
     }
@@ -308,7 +328,11 @@ public class Window extends JFrame {
             return (BufferedImage) img;
 
         // Create a buffered image with transparency
-        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bimage = new BufferedImage(
+                img.getWidth(null),
+                img.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB
+        );
 
         // Draw the image on to the buffered image
         Graphics2D bGr = bimage.createGraphics();

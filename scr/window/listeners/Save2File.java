@@ -58,7 +58,7 @@ public class Save2File extends NyaListener implements ActionListener {
                     prefOut.close();
                 }
 
-                ImageIO.write(getNya.getBufferedFullImage(), "png", lastSave);
+                ImageIO.write(getNya.getFullImage(), "png", lastSave);
             } catch (IOException e1) {
                 System.out.println("Something went wrong =(");
             }

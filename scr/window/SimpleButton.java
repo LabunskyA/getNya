@@ -27,7 +27,10 @@ class SimpleButton extends JToggleButton {
         super();
         try {
             setIcon(new ImageIcon(ImageIO.read(getClass().getResource(path))));
-            setPressedIcon(new ImageIcon(ImageIO.read(getClass().getResource(path.substring(0, path.indexOf(".")) + "Pressed.png"))));
+            setPressedIcon(new ImageIcon(
+                    ImageIO.read(getClass().getResource(path.substring(0, path.indexOf(".")) + "Pressed.png")))
+            );
+
             setMargin(new Insets(0, 0, 0, 0));
             setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, false));
             setBackground(Color.WHITE);

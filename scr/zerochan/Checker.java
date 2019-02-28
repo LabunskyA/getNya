@@ -17,19 +17,20 @@ public class Checker {
     }
 
     public boolean CheckTag(LittleParser littleParser) throws MalformedURLException {
-        Boolean check = true;
+        boolean check = true;
 
         if (getNya.getUseTag()) {
             String[] or = getNya.getTag().split("or ");
 
             for (String tags : or) {
-                Integer tagNumContains = 0;
-                String[] splitedTags = tags.split(" "); //for more than one tag
+                int tagNumContains = 0;
+                String[] splitedTags = tags.split(" "); // for more than one tag
+
                 for (String tag : splitedTags) {
                     String parseResult = littleParser.parse("http://www.zerochan.net/" +
                                                                             Zerochan.numberNya, LittleParser.TAG);
                     if (tag.length() > 0 && (parseResult.contains(">" + tag) ||
-                            parseResult.contains(tag + " ") || parseResult.contains(tag + "<"))) //fixed?
+                            parseResult.contains(tag + " ") || parseResult.contains(tag + "<")))
                         tagNumContains++;
                 }
 
@@ -41,7 +42,7 @@ public class Checker {
         return check;
     }
 
-    public boolean CheckSize(Integer nyaWidth, Integer nyaHeight, Boolean check) {
+    public boolean checkSize(int nyaWidth, int nyaHeight, boolean check) {
         if (getNya.isHdOnly() && (nyaWidth < 1920 || nyaHeight < 1080))
             check = true;
 
@@ -54,8 +55,7 @@ public class Checker {
 
             if (!getNya.getMoreThanY() && !getNya.getMoreThanX() && !getNya.getLessThanY() && !getNya.getLessThanX() &&
                     ((nyaHeight != getNya.customResolution.height && nyaHeight != 0) ||
-                                    (nyaWidth != getNya.customResolution.width && nyaWidth != 0))
-                                                                                                    )
+                                    (nyaWidth != getNya.customResolution.width && nyaWidth != 0)))
                 check = true;
         }
 
