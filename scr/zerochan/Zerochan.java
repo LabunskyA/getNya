@@ -19,7 +19,7 @@ public class Zerochan {
     public static void getNumberOfTheNyas() {
         try {
             LittleParser littleParser = new LittleParser();
-            String result = littleParser.parse("http://zerochan.Zerochan.net", LittleParser.MAIN_PAGE);
+            String result = littleParser.parse("https://zerochan.net", LittleParser.MAIN_PAGE);
 
             int index = result.indexOf("240.");
             String stringNumber = result.substring(index + 4, index + 11);
@@ -37,8 +37,8 @@ public class Zerochan {
 
     public static void generateURLs() {
         try {
-            nyaURL = new URL("http://s1.zerochan.net/.600." + Integer.toString(numberNya) + ".jpg");
-            fullURL = new URL("http://static.zerochan.net/.full." + Integer.toString(numberNya) + ".jpg");
+            nyaURL = new URL("https://s1.zerochan.net/.600." + numberNya + ".jpg");
+            fullURL = new URL("https://static.zerochan.net/.full." + numberNya + ".jpg");
         } catch (MalformedURLException ignored) {}
     }
 }

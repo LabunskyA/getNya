@@ -15,10 +15,10 @@ public class AboutPanel extends JPanel {
         setVisible(false);
 
         JTextArea aboutNya = new JTextArea("Simple Zerochan.net image downloader.\n" +
-                "Use ' ' (space) as logical and in the text field.\n" +
-                "Use 'or' as logical or in text field.\n" +
+                "Use ' ' (space) as a logical and in the text field.\n" +
+                "Use 'or' as a logical or in text field.\n" +
                 "Use > and < before size in height and width\n" +
-                "fields to specify nya size.\n\nMade by Labunsky Artem");
+                "fields to specify required nya size.\n\nMade by Labunsky Artem");
 
         aboutNya.setEnabled(false);
         aboutNya.setBackground(Color.WHITE);

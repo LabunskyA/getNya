@@ -30,7 +30,7 @@ public class SettingsPanel extends JPanel {
         String width4Scan = "";
         String height4Scan = "";
 
-        JTextField tagPointer = new JTextField(" Tag (could works slowly): ");
+        JTextField tagPointer = new JTextField(" Tag (could work slowly): ");
 
         JPanel hdCheckBoxPanel = new JPanel();
         JPanel tagPanel = new JPanel();
@@ -125,6 +125,7 @@ public class SettingsPanel extends JPanel {
                 }
             }
         });
+
         heightScan.addKeyListener(new KeyAdapter() {
             public void keyTyped(KeyEvent e) {
                 char c = e.getKeyChar();

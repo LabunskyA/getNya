@@ -12,28 +12,23 @@ import java.io.IOException;
  * VK: vk.com/labunsky
  */
 public class WelcomeLogo extends JFrame {
-    public WelcomeLogo() {
+    public WelcomeLogo() throws IOException {
+        setIconImage(new ImageIcon(ImageIO.read(getClass().getResource("resources/Nya.png"))).getImage());
+
         try {
-            setIconImage(new ImageIcon(ImageIO.read(getClass().getResource("resources/Nya.png"))).getImage());
+            BufferedImage logo = ImageIO.read(getClass().getResource("resources/getNya.png"));
+
+            JLabel logoImage = new JLabel();
+            logoImage.setIcon(new ImageIcon(logo.getScaledInstance(300, -1, Image.SCALE_FAST)));
+
+            add(logoImage);
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(-1);
         }
 
-        BufferedImage logo = null;
-        try {
-            logo = ImageIO.read(getClass().getResource("resources/getNya.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JLabel logoImage = new JLabel();
-
-        assert logo != null;
-        logoImage.setIcon(new ImageIcon(logo.getScaledInstance(300, -1, Image.SCALE_FAST)));
-
-        add(logoImage);
         setUndecorated(true);
         setVisible(true);
+
         pack();
         setLocationRelativeTo(null);
     }

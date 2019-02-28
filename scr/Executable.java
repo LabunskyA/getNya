@@ -4,14 +4,15 @@ import window.listeners.WindowStateListener;
 import zerochan.Zerochan;
 
 import javax.swing.*;
-import java.net.MalformedURLException;
+import java.io.IOException;
 
 /**
  * Created by LabunskyA
  * Protected with GNU GPLv2 and your honesty
  */
 class Executable {
-    public static void main(String[] args) throws MalformedURLException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, UnsupportedLookAndFeelException,
+            InstantiationException, IllegalAccessException, ClassNotFoundException {
         Window getNya = new Window();
         WelcomeLogo welcomeLogo = new WelcomeLogo();
 
